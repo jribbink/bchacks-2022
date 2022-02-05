@@ -11,19 +11,4 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   })
 
-  class DrawingApp{
-    private canvas: HTMLCanvasElement;
-    private context: CanvasRenderingContext2D;
-    private paint: boolean;
-
-    constructor() {
-      let canvas = document.getElementById('canvas') as
-                 HTMLCanvasElement;
-      let context = canvas.getContext("2d");
-      
-      //this.redraw();
-      //this.createUserEvents();
-    }
-  }
-
-  new DrawingApp();
+ 
