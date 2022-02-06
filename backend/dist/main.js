@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
 const message_type_1 = require("shared/enum/message-type");
-const messages_1 = require("shared/messages");
+const entity_list_update_1 = require("shared/messages/entity-list-update");
+const player_identification_1 = require("shared/messages/player-identification");
 const wss = new ws_1.WebSocketServer({
     port: 8080,
     perMessageDeflate: {
@@ -45,10 +46,12 @@ function getUniqueID() {
     }
     return s4() + s4() + '-' + s4();
 }
+let idd = 0;
 wss.on('connection', (ws) => {
     const id = getUniqueID();
     clientList[id] = ws;
     ws.on('message', (rawdata) => {
+        console.log("m", idd++);
         const data = JSON.parse(rawdata.toString());
         switch (data.type) {
             case message_type_1.MessageType.PLAYER_UPDATE:
@@ -56,8 +59,9 @@ wss.on('connection', (ws) => {
                 let player = message.player;
                 player.id = id;
                 entityList[id] = player;
+                console.log(entityList);
                 broadcast((id) => {
-                    return JSON.stringify(new messages_1.EntityListUpdateMessage({
+                    return JSON.stringify(new entity_list_update_1.EntityListUpdateMessage({
                         entities: Object.values(entityList).filter(entity => {
                             return entity.id != id;
                         })
@@ -68,6 +72,8 @@ wss.on('connection', (ws) => {
     });
     ws.on('close', (code, reason) => {
         delete clientList[id];
+        delete entityList[id];
     });
-    ws.send(JSON.stringify(new messages_1.EntityListUpdateMessage({ entities: Object.values(entityList) })));
+    ws.send(JSON.stringify(new player_identification_1.PlayerIdentificationMessage({ id: id })));
+    ws.send(JSON.stringify(new entity_list_update_1.EntityListUpdateMessage({ entities: Object.values(entityList) })));
 });

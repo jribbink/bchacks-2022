@@ -10,7 +10,7 @@ export enum RopeState {
 }
 
 export class Rope extends Entity {
-     owner : Cowboy;                     // who's throwing it
+    owner : Cowboy;                     // who's throwing it
     angle : number;
     lassoDist : number;
     state : RopeState;
@@ -50,6 +50,9 @@ export class Rope extends Entity {
 
     update(g: Game, delta: number){
         let collidingWith: Entity;
+        if(this.owner.delay > 0){
+            this.owner.delay -= delta;
+        }
         if(!this.grabbed){
             g.entityList.every(entity => {
                 if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbed" && entity.status != "fallen"){
@@ -77,15 +80,17 @@ export class Rope extends Entity {
         {
             this.state = RopeState.STABLE
             g.removeEntity(this)
-            this.owner.rope = null
+            
             if(this.grabbed){
-            if(this.angle - Math.PI > Math.PI/2)
-                this.grabbed.status = "right"
-            else
-                this.grabbed.status = "left"
-        }
+                if(this.angle - Math.PI > Math.PI/2)
+                    this.grabbed.status = "right"
+                else
+                    this.grabbed.status = "left"
+            }
             this.grabbed = null
-
+            this.owner.rope = null
+            this.owner.delay = 420;
+            console.log(this.owner.delay);
         }
         else if(this.grabbed)
         {

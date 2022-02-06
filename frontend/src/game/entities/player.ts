@@ -2,7 +2,6 @@ import { Cowboy } from ".";
 import { Game } from "../game";
 
 export class Player extends Cowboy {
-    cowboy: Cowboy
     game: Game
     id?: string
 

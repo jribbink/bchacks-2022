@@ -1,9 +1,6 @@
+import { Message } from "./message";
 import { MessageType } from "../enum/message-type";
 import { Player } from '../models/player'
-
-export abstract class Message {
-    abstract type: MessageType
-}
 
 export class PlayerUpdateMessage extends Message {
     type: MessageType = MessageType.PLAYER_UPDATE
@@ -14,4 +11,3 @@ export class PlayerUpdateMessage extends Message {
         Object.assign(this, data)
     }
 }
-

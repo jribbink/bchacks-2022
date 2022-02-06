@@ -1,7 +1,8 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { Player } from 'shared/models'
 import { MessageType } from 'shared/enum/message-type'
-import { EntityListUpdateMessage } from 'shared/messages'
+import { EntityListUpdateMessage } from 'shared/messages/entity-list-update'
+import { PlayerIdentificationMessage } from 'shared/messages/player-identification'
 
 const wss = new WebSocketServer({
     port: 8080,
@@ -49,11 +50,14 @@ function getUniqueID() {
     return s4() + s4() + '-' + s4();
 }
 
+let idd = 0;
+
 wss.on('connection', (ws) => {
     const id = getUniqueID();
     clientList[id] = ws;
 
     ws.on('message', (rawdata) => {
+        console.log("m", idd++)
         const data = JSON.parse(rawdata.toString());
         switch (data.type) {
             case MessageType.PLAYER_UPDATE:
@@ -61,6 +65,8 @@ wss.on('connection', (ws) => {
                 let player = message.player;
                 player.id = id;
                 entityList[id] = player;
+
+                console.log(entityList)
 
                 broadcast((id: string) => {
                     return JSON.stringify(new EntityListUpdateMessage({
@@ -74,8 +80,10 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', (code, reason) => {
-        delete clientList[id];
+        delete clientList[id]
+        delete entityList[id]
     });
 
+    ws.send(JSON.stringify(new PlayerIdentificationMessage({id: id})))
     ws.send(JSON.stringify(new EntityListUpdateMessage({entities: Object.values(entityList)})))
 });

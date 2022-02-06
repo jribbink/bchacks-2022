@@ -29,6 +29,7 @@ export class LocalPlayer extends Player {
     }
 
     mouseHandler (e: MouseEvent) {
+        if(this.delay > 0) return;
         if(this.rope) return;
         if(this.status == "grabbed"|| this.status == "fallen") return;
         var rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
@@ -64,6 +65,10 @@ export class LocalPlayer extends Player {
     update (game: Game, delta:number) {
         this.updatePosition(delta)
         super.update(game, delta)
+        if(this.delay > 0) {
+            this.delay -= delta;
+            if(this.delay < 0) this.delay = 0;
+        }
     }
 
     render (game: Game) {

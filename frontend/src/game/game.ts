@@ -6,7 +6,7 @@ export class Game {
   public canvas: HTMLCanvasElement;
   public context: CanvasRenderingContext2D;
 
-  private localPlayer: LocalPlayer;
+  public localPlayer: LocalPlayer;
   entityList: Entity[];
   
   private img: HTMLImageElement;
@@ -68,6 +68,7 @@ export class Game {
       })
 
       //do other background stuff
+      this.gameServer.updatePosition(delta)
   }
 
   render () {
@@ -82,15 +83,22 @@ export class Game {
       entity.render(this)
       
       this.context.beginPath();
-      this.context.arc(entity.x, entity.y, 5, 0, 2 * Math.PI);
+      this.context.arc(entity.x, entity.y, 16, 0, 2 * Math.PI);
       this.context.stroke(); 
-      if(entity instanceof Cowboy){
-       // this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
+      if(entity instanceof LocalPlayer){
+        // this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
+        this.context.beginPath();
+        this.context.arc(entity.x, entity.y, 48, 0, 2 * Math.PI * entity.delay / 420);
+        this.context.stroke();
+       
       }
       if(entity instanceof Rope){
 
         this.context.save()
-        this.context.translate(entity.owner.x, entity.owner.y - 28 + 28*(-1 * Math.cos(entity.angle) + 1));
+        
+        this.context.translate(entity.owner.x + 28 * Math.sin(entity.angle) * entity.lassoDist/500, entity.owner.y - 28 * Math.cos(entity.angle) * entity.lassoDist/500);
+        this.context.scale(entity.lassoDist/500,entity.lassoDist/500);
+       // this.context.translate(entity.owner.x, entity.owner.y - 28);
         this.context.rotate(entity.angle);
         this.context.drawImage(this.ropebody, 0,0);
         this.context.restore();
