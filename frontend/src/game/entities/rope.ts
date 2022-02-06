@@ -32,8 +32,8 @@ export class Rope extends Entity {
         this.x = this.owner.x
         this.y = this.owner.y
 
-        this.width=25
-        this.height=25
+        this.width=84
+        this.height=76
     }
 
     updatePosition(delta: number)
@@ -55,7 +55,7 @@ export class Rope extends Entity {
         }
         if(!this.grabbed){
             g.entityList.every(entity => {
-                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbed" && entity.status != "fallen"){
+                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbedLeft" && entity.status != "grabbedRightss" && entity.status != "fallen"){
                     if(this.x > entity.x-entity.width/2  && this.x<entity.x+entity.width/2 
                         && this.y>entity.y -entity.height/2 && this.y <entity.y+entity.height/2){
                         this.x=entity.x;
@@ -70,7 +70,8 @@ export class Rope extends Entity {
 
             if(collidingWith && collidingWith instanceof Cowboy && collidingWith != this.owner)
             {
-                collidingWith.status = "grabbed"
+                if(Math.abs(this.angle) < Math.PI/2) collidingWith.status = "grabbedLeft"
+                else collidingWith.status = "grabbedRight"
                 this.grabbed = collidingWith;
                 this.state = RopeState.PULLING;
             }
@@ -82,7 +83,7 @@ export class Rope extends Entity {
             g.removeEntity(this)
             
             if(this.grabbed){
-                if(this.angle - Math.PI > Math.PI/2)
+                if(this.grabbed.status == "grabbedRight")
                     this.grabbed.status = "right"
                 else
                     this.grabbed.status = "left"

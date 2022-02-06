@@ -29,6 +29,7 @@ const wss = new WebSocketServer({
     }
 });
 
+let entityChanges = true;
 const entityList: {[id:string]:Player} = {};
 const clientList: {[id:string]:WebSocket} = {};
 
@@ -65,16 +66,16 @@ wss.on('connection', (ws) => {
                 const updateMessage: PlayerUpdateMessage = data;
                 let player = updateMessage.player!!;
                 player.id = id;
+
                 entityList[id] = player;
 
-                /* MOVE ME TO LOOP!! (and only update every 1 sec/ if changes available) */
                 broadcast((id: string) => {
                     return JSON.stringify(new EntityListUpdateMessage({
                         entities: Object.values(entityList).filter(entity => {
                             return entity.id != id;
                         })
                     }))
-                });
+                })
                 break;
             case MessageType.ROPE_FIRE:
                 const ropeFireMessage: RopeFireMessage = data
@@ -91,3 +92,15 @@ wss.on('connection', (ws) => {
     ws.send(JSON.stringify(new PlayerIdentificationMessage({id: id})))
     ws.send(JSON.stringify(new EntityListUpdateMessage({entities: Object.values(entityList)})))
 });
+
+
+/*const now = () => {
+    const hrTime = process.hrtime();
+    return hrTime[0] * 1000000 + hrTime[1] / 1000;
+};
+let startTime = now()
+function stateLoop () {
+    
+    setImmediate(stateLoop)
+}
+stateLoop()*/

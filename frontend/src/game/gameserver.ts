@@ -11,7 +11,7 @@ import { PlayerUpdateMessage } from 'shared/messages/player-update'
 import { RopeFireMessage } from 'shared/messages/rope-fire'
 
 export class GameServer {
-    public static readonly updateFrequencyMs: number = 15
+    public static readonly updateFrequencyMs: number = 5
 
     private ws: WebSocket
     private game: Game
@@ -47,6 +47,7 @@ export class GameServer {
                             const entityData = entityListMessage.entities[entityDataIndex]
                             entity.x = entityData.x
                             entity.y = entityData.y
+                            entity.status = entityData.status
                             entityListMessage.entities!!.splice(entityDataIndex, 1)
                         }
                     })
@@ -59,6 +60,7 @@ export class GameServer {
                         const newEntity = new Player(this.game, entity.id)
                         newEntity.x = entity.x
                         newEntity.y = entity.y
+                        newEntity.status = entity.status
                         this.game.entityList.push(newEntity)
                     })
                     break;
@@ -81,7 +83,13 @@ export class GameServer {
         if(this.rollingDelta < GameServer.updateFrequencyMs) return;
         if(this.ws.readyState != WebSocket.OPEN) return
 
-        const message = new PlayerUpdateMessage({player: { x: this.game.localPlayer.x, y: this.game.localPlayer.y }})
+        const message = new PlayerUpdateMessage({
+            player: {
+                x: this.game.localPlayer.x,
+                y: this.game.localPlayer.y,
+                status: this.game.localPlayer.status,
+            }
+        })
         this.ws.send(JSON.stringify(message))
         this.rollingDelta -= GameServer.updateFrequencyMs
     }

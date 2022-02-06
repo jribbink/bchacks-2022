@@ -10,12 +10,14 @@ const controls: { [key:string]: (player: LocalPlayer, delta: number) => void } =
     },
     'a': (player, delta) => {
         player.x -= 0.5 * delta
+        player.status = "left"
     },
     's': (player, delta) => {
         player.y += 0.5 * delta
     },
     'd': (player, delta) => {
         player.x += 0.5 * delta
+        player.status = "right"
     },
 }
 
