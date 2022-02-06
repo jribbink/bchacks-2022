@@ -34,7 +34,7 @@ export class LocalPlayer extends Player {
         if(this.status == "grabbed"|| this.status == "fallen") return;
         var rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
         const coords = [e.clientX - rect.left, e.clientY - rect.top]
-        this.throwLasso(coords);
+        this.throwLasso(coords, this.game);
         this.game.pushEntity(this.rope);
     }
 
@@ -43,7 +43,7 @@ export class LocalPlayer extends Player {
         if(this.status == "grabbed" || this.status == "fallen") return;
 
         
-        let hitboxX = 16; let hitboxY = 32;              //replace with cowboy.width/2 and cowboy.height/2
+        let hitboxX = this.width/2; let hitboxY = this.height/2;
 
         for (let key in controls)
         {

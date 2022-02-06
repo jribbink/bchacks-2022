@@ -15,11 +15,14 @@ export class Cowboy extends Entity {
         this.height = 96
     }
 
-    throwLasso(targ: number[]){
+    throwLasso(targ: number[], game: Game){
         this.rope = new Rope(this);
         this.rope.length = 0;
         this.rope.angle = Math.atan2((targ[1] - this.y), (targ[0] - this.x));
         this.rope.state = RopeState.EXTENDING;
+        
+        //send to server
+        game.gameServer.throwLasso(this.rope)
     }
 
     update(game: Game, delta: number) {

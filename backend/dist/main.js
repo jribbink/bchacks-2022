@@ -28,15 +28,17 @@ const wss = new ws_1.WebSocketServer({
 });
 const entityList = {};
 const clientList = {};
-function broadcast(message) {
+function broadcast(message, excludeId) {
     if (message instanceof Function) {
         for (let id in clientList) {
-            clientList[id].send(message(id));
+            if (id != excludeId)
+                clientList[id].send(message(id));
         }
     }
     else {
         for (let id in clientList) {
-            clientList[id].send(message);
+            if (id != excludeId)
+                clientList[id].send(message);
         }
     }
 }
@@ -51,15 +53,14 @@ wss.on('connection', (ws) => {
     const id = getUniqueID();
     clientList[id] = ws;
     ws.on('message', (rawdata) => {
-        console.log("m", idd++);
         const data = JSON.parse(rawdata.toString());
         switch (data.type) {
             case message_type_1.MessageType.PLAYER_UPDATE:
-                const message = data;
-                let player = message.player;
+                const updateMessage = data;
+                let player = updateMessage.player;
                 player.id = id;
                 entityList[id] = player;
-                console.log(entityList);
+                /* MOVE ME TO LOOP!! (and only update every 1 sec/ if changes available) */
                 broadcast((id) => {
                     return JSON.stringify(new entity_list_update_1.EntityListUpdateMessage({
                         entities: Object.values(entityList).filter(entity => {
@@ -67,6 +68,10 @@ wss.on('connection', (ws) => {
                         })
                     }));
                 });
+                break;
+            case message_type_1.MessageType.ROPE_FIRE:
+                const ropeFireMessage = data;
+                broadcast(rawdata.toString(), id);
                 break;
         }
     });

@@ -6,4 +6,6 @@ var MessageType;
     MessageType[MessageType["PLAYER_UPDATE"] = 0] = "PLAYER_UPDATE";
     MessageType[MessageType["ENTITY_LIST_UPDATE"] = 1] = "ENTITY_LIST_UPDATE";
     MessageType[MessageType["PLAYER_IDENTIFICATION"] = 2] = "PLAYER_IDENTIFICATION";
+    MessageType[MessageType["ROPE_FIRE"] = 3] = "ROPE_FIRE";
+    MessageType[MessageType["ROPE_HIT"] = 4] = "ROPE_HIT";
 })(MessageType = exports.MessageType || (exports.MessageType = {}));

@@ -3,6 +3,8 @@ import { Player } from 'shared/models'
 import { MessageType } from 'shared/enum/message-type'
 import { EntityListUpdateMessage } from 'shared/messages/entity-list-update'
 import { PlayerIdentificationMessage } from 'shared/messages/player-identification'
+import { PlayerUpdateMessage } from 'shared/messages/player-update'
+import { RopeFireMessage } from 'shared/messages/rope-fire'
 
 const wss = new WebSocketServer({
     port: 8080,
@@ -30,15 +32,15 @@ const wss = new WebSocketServer({
 const entityList: {[id:string]:Player} = {};
 const clientList: {[id:string]:WebSocket} = {};
 
-function broadcast(message: (id: string) => string | string) {
+function broadcast(message: ((id: string) => string) | string, excludeId?: string) {
     if (message instanceof Function) {
         for (let id in clientList) {
-            clientList[id].send(message(id));
+            if(id != excludeId) clientList[id].send(message(id));
         }
     }
     else {
         for (let id in clientList) {
-            clientList[id].send(message);
+            if(id != excludeId) clientList[id].send(message);
         }
     }
 }
@@ -57,17 +59,15 @@ wss.on('connection', (ws) => {
     clientList[id] = ws;
 
     ws.on('message', (rawdata) => {
-        console.log("m", idd++)
         const data = JSON.parse(rawdata.toString());
         switch (data.type) {
             case MessageType.PLAYER_UPDATE:
-                const message = data;
-                let player = message.player;
+                const updateMessage: PlayerUpdateMessage = data;
+                let player = updateMessage.player!!;
                 player.id = id;
                 entityList[id] = player;
 
-                console.log(entityList)
-
+                /* MOVE ME TO LOOP!! (and only update every 1 sec/ if changes available) */
                 broadcast((id: string) => {
                     return JSON.stringify(new EntityListUpdateMessage({
                         entities: Object.values(entityList).filter(entity => {
@@ -75,6 +75,10 @@ wss.on('connection', (ws) => {
                         })
                     }))
                 });
+                break;
+            case MessageType.ROPE_FIRE:
+                const ropeFireMessage: RopeFireMessage = data
+                broadcast(rawdata.toString(), id)
                 break;
         }
     });

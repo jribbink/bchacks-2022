@@ -18,7 +18,7 @@ export class Game {
 
   private lastFrame?: number;
 
-  private gameServer: GameServer;
+  public gameServer: GameServer;
 
   constructor() {
     this.gameServer = new GameServer(this)
@@ -90,7 +90,18 @@ export class Game {
         this.context.beginPath();
         this.context.arc(entity.x, entity.y, 48, 0, 2 * Math.PI * entity.delay / 420);
         this.context.stroke();
-       
+
+        //sprites = document.getElementById("cowboyWalk") as HTMLImageElement
+        //sprite = sprites[0]
+        //if(entity.state == 'left') {
+        //  context.translate(entity.x + entity.width, entity.y)
+        //  context.scale(-1,1)
+        //  context.drawImage(sprite,0,0)
+        //  context.setTransform(1,0,0,1,0,0)
+        //} else {
+        //  context.drawImage(sprite,entity.x,entity.y);
+        //}
+        //sprites.appendChild(sprite);
       }
       if(entity instanceof Rope){
 

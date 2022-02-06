@@ -2,4 +2,6 @@ export enum MessageType {
     PLAYER_UPDATE,
     ENTITY_LIST_UPDATE,
     PLAYER_IDENTIFICATION,
+    ROPE_FIRE,
+    ROPE_HIT,
 }
