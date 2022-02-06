@@ -31,6 +31,7 @@ export class LocalPlayer extends Player {
     }
 
     mouseHandler (e: MouseEvent) {
+        if(!this.game.loaded) return;
         if(this.delay > 0) return;
         if(this.rope) return;
         if(this.status == "grabbed"|| this.status == "fallen") return;

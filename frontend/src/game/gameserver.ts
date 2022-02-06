@@ -16,12 +16,14 @@ export class GameServer {
     private ws: WebSocket
     private game: Game
     public rollingDelta: number
+    public connected = false
 
     constructor (game: Game) {
         this.game = game
         this.ws = new WebSocket(`ws://${window.location.hostname}:8080`)
         this.ws.onopen = (e:Event) => {
             console.log("Websocket Connected!")
+            this.connected = true
         }
         this.ws.onmessage = (e: MessageEvent) => {
             const message: Message = JSON.parse(e.data)
@@ -32,6 +34,8 @@ export class GameServer {
                     console.log("Local player id:", game.localPlayer.id)
                     break;
                 case MessageType.ENTITY_LIST_UPDATE:
+                    if (!game.loaded) break
+
                     let entityListMessage: EntityListUpdateMessage = message
 
                     //console.log("entity list ", entityListMessage)
@@ -65,6 +69,8 @@ export class GameServer {
                     })
                     break;
                 case MessageType.ROPE_FIRE:
+                    if (!game.loaded) break;
+                    
                     let ropeFireMessage: RopeFireMessage = message
                     let entityId = game.entityList.findIndex(e => e instanceof Player && e.id == ropeFireMessage.player_id);
 

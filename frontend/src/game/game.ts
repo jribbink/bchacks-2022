@@ -1,6 +1,7 @@
 import { Entity, Cowboy, Rope, Hole, RopeState } from "./entities"
 import { LocalPlayer } from "./entities/localplayer";
 import { GameServer } from "./gameserver";
+import { StartScreen } from "./start-screen";
 import { Images } from "./util/images";
 
 const rope = require("../assets/sprites/ropehead.png")
@@ -14,33 +15,37 @@ export class Game {
   public localPlayer: LocalPlayer;
   public entityList: Entity[];
 
+  public loaded = false
   public gameServer: GameServer;
+
+  private startScreen: StartScreen
 
   constructor() {
     // Start loading images
     const img = Images.Instance
 
+    // Init Canvas
+    this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    this.context = this.canvas.getContext("2d")!!;
+    this.canvas.style.width = "800px";
+    this.canvas.style.height = "600px";
+
+    // Create localPlayer object
+    this.localPlayer = new LocalPlayer(this);
+
     // Load websocket server
     this.gameServer = new GameServer(this)
 
-    this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
-    this.context = this.canvas.getContext("2d")!!;
+    this.startScreen = new StartScreen(this)
+    this.waitUntilLoaded()
+  }
 
-    this.canvas.style.width = "800px";
-    this.canvas.style.height = "600px";
-    
+  startGame () {
     this.entityList = [];
-    this.localPlayer = new LocalPlayer(this);
     this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90)
     this.entityList.push(this.hole);
     this.entityList.push(this.localPlayer);
-
-    ///while, server has cowboys/players????
-    //this.entitylist.push(player.cowboy)
-    console.log(this.canvas);
-    console.log(this.context);
-
-    this.waitUntilLoaded()
+    this.loop()
   }
 
   calculateDelta (): number {
@@ -51,15 +56,16 @@ export class Game {
   }
 
   waitUntilLoaded () {
-    if (!Images.Instance.loaded) {
+    if (!Images.Instance.loaded || !this.gameServer.connected) {
       console.log("loading")
       setTimeout(this.waitUntilLoaded.bind(this), 0);
     } else {
-      setTimeout(this.loop.bind(this), 0);
+      setTimeout(this.startScreen.begin.bind(this.startScreen), 0);
     }
   }
 
-  loop () {  
+  loop () {
+    this.loaded = true
     this.update();
     this.render();
     setTimeout(this.loop.bind(this), 0);
