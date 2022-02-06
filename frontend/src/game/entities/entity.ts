@@ -10,6 +10,10 @@ export class Entity {
     isCowboy() {
         return false;
     }
+
+    isRope() {
+        return false;
+    }
     
     get position () {
         return [this.x,this.y]

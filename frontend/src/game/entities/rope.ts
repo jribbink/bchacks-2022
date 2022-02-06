@@ -3,9 +3,11 @@ import { Cowboy } from "./cowboy";
 
 export class Rope extends Entity {
     private owner : Cowboy;                     // who's throwing it
-    private targetTheta : number;
-    private lassoDist : number;
-    private state? : string;                   // out / retracting / idle
+    targetTheta : number;
+    lassoDist : number;
+    state? : string;                   // thrown / retracting / idle
+    ropeSpeed : number;
+    ropeMaxLen : number;
 
     constructor(owner : Cowboy)
     {
@@ -15,14 +17,28 @@ export class Rope extends Entity {
         this.lassoDist = 0;
         this.state = "idle";
 
+        this.ropeSpeed = 1;                 // default numbers
+        this.ropeMaxLen = 10;               // ie placeholders, please change
+
 
         this.x = this.owner.x
         this.y = this.owner.y
     }
 
-    moveLasso(amt: Number)
+    updatePosition(delta: number)
     {
-        // increment lassoDist by amt
+        if(this.state === "thrown")
+        {
+            this.lassoDist += this.ropeSpeed * delta;
+        }
+        if(this.state === "retracting")
+        {
+            this.lassoDist -= this.ropeSpeed * delta;
+        }
+    }
+
+    isRope(): boolean {
+        return true;
     }
 
     set length (d : number) {

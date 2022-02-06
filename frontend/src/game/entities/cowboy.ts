@@ -1,3 +1,4 @@
+import { Game } from "../game"
 import { Entity } from "./entity"
 import { Rope } from "./rope"
 

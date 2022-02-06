@@ -1,17 +1,23 @@
 import { Entity, Cowboy, Rope, Hole } from "./entities"
 import { LocalPlayer } from "./entities/localplayer";
+import { GameServer } from "./gameserver";
 
 export class Game {
-  private canvas: HTMLCanvasElement;
+  public canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
-  private entityList: Entity[];
-  private img: HTMLImageElement;
+
   private localPlayer: LocalPlayer;
+  private entityList: Entity[];
+  
+  private img: HTMLImageElement;
   private hole: Hole;
 
   private lastFrame?: number;
 
+  private gameServer: GameServer;
+
   constructor() {
+    this.gameServer = new GameServer()
 
     this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!!;
@@ -22,10 +28,9 @@ export class Game {
     this.entityList = [];
     this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90);
 
-    this.entityList.push(new Cowboy(), new Cowboy());
-    this.entityList[1].x=200;
+    this.entityList.push(new Cowboy());
 
-    this.localPlayer = new LocalPlayer(this.entityList[0] as Cowboy);
+    this.localPlayer = new LocalPlayer(this.entityList[0] as Cowboy, this);
 
     console.log(this.canvas);
     console.log(this.context);
@@ -35,8 +40,8 @@ export class Game {
 
   calculateDelta (): number {
     const timeNow = window.performance.now()
-    const delta = timeNow - (this.lastFrame ?? timeNow)
-    this.lastFrame = timeNow
+    const delta = timeNow - (this.lastFrame ?? timeNow);
+    this.lastFrame = timeNow;
     return delta
   }
 
@@ -62,6 +67,22 @@ export class Game {
                   // have player fall
           }
         }
+
+        if(entity.isRope()) {
+          let rope : Rope = entity as Rope;
+          if(rope.lassoDist <= 0)
+          {
+            rope.state = "idle";
+            this.entityList.splice(this.entityList.indexOf(entity), 1)
+          }
+          else
+          {
+            if(rope.lassoDist >= rope.ropeMaxLen)
+              rope.status = "retracting";
+            
+            rope.updatePosition(delta);
+          }
+        }
       })
 
       //do other background stuff
@@ -81,6 +102,23 @@ export class Game {
       this.context.arc(entity.x, entity.y, 2, 0, 2 * Math.PI);
       this.context.stroke(); 
       this.context.drawImage(this.img, entity.x, entity.y);
+
+      if(entity.isRope())
+      {
+        let rope : Rope = entity as Rope;
+        if(rope.status=="thrown" || rope.status == "retracting"){
+          this.context.beginPath();
+          this.context.arc((rope.x+rope.lassoDist*Math.cos(rope.targetTheta)), (rope.x+rope.lassoDist*Math.sin(rope.targetTheta)), 5, 0, 2 * Math.PI);
+          this.context.stroke(); 
+        }
+      }
+
+
     })
+  }
+
+  pushEntity (e: Entity)
+  {
+    this.entityList.push(e);
   }
 }
