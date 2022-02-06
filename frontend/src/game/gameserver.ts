@@ -20,7 +20,7 @@ export class GameServer {
 
     constructor (game: Game) {
         this.game = game
-        this.ws = new WebSocket(`ws://${window.location.hostname}:8080`)
+        this.ws = new WebSocket(`wss://hhsbackend.ribbink.ca`)
         this.ws.onopen = (e:Event) => {
             console.log("Websocket Connected!")
             this.connected = true
