@@ -7,7 +7,7 @@ export class Player extends Cowboy {
     name?: string
 
     resetPosition () {
-        let radius = Math.random() * 180 + 100
+        let radius = Math.random() * 260 + 60
         let theta = Math.random() * 2 * Math.PI
         this.x = 400 + radius * Math.cos(theta)
         this.y = 300 + radius * Math.sin(theta)
@@ -29,7 +29,7 @@ export class Player extends Cowboy {
     render(game: Game) {
         super.render(game)
 
-        if(!this.name) return
+        if(!this.name || this.status == "dead") return
         game.context.font = ("600 12pt Open Sans");
         game.context.fillStyle = ("white")
         const size = game.context.measureText(this.name)
