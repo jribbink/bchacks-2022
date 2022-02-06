@@ -4,8 +4,9 @@ const ws_1 = require("ws");
 const message_type_1 = require("shared/enum/message-type");
 const entity_list_update_1 = require("shared/messages/entity-list-update");
 const player_identification_1 = require("shared/messages/player-identification");
+const name_list_update_1 = require("shared/messages/name-list-update");
 const wss = new ws_1.WebSocketServer({
-    port: 8080,
+    port: 4221,
     perMessageDeflate: {
         zlibDeflateOptions: {
             // See zlib defaults.
@@ -29,6 +30,7 @@ const wss = new ws_1.WebSocketServer({
 let entityChanges = true;
 const entityList = {};
 const clientList = {};
+const nameList = {};
 function broadcast(message, excludeId) {
     if (message instanceof Function) {
         for (let id in clientList) {
@@ -71,18 +73,27 @@ wss.on('connection', (ws) => {
                 break;
             case message_type_1.MessageType.ROPE_FIRE:
                 const ropeFireMessage = data;
-                console.log("rop");
                 broadcast(rawdata.toString(), id);
+                break;
+            case message_type_1.MessageType.PLAYER_IDENTIFICATION:
+                const identificationMessage = data;
+                nameList[id] = identificationMessage.id.toUpperCase();
                 break;
         }
     });
     ws.on('close', (code, reason) => {
         delete clientList[id];
         delete entityList[id];
+        delete nameList[id];
     });
     ws.send(JSON.stringify(new player_identification_1.PlayerIdentificationMessage({ id: id })));
     ws.send(JSON.stringify(new entity_list_update_1.EntityListUpdateMessage({ entities: Object.values(entityList) })));
 });
+const broadcastNames = () => {
+    broadcast(JSON.stringify(new name_list_update_1.NameListUpdateMessage({ nameList })));
+    setTimeout(broadcastNames, 500);
+};
+broadcastNames();
 /*const now = () => {
     const hrTime = process.hrtime();
     return hrTime[0] * 1000000 + hrTime[1] / 1000;

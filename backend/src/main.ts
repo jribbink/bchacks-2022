@@ -5,6 +5,7 @@ import { EntityListUpdateMessage } from 'shared/messages/entity-list-update'
 import { PlayerIdentificationMessage } from 'shared/messages/player-identification'
 import { PlayerUpdateMessage } from 'shared/messages/player-update'
 import { RopeFireMessage } from 'shared/messages/rope-fire'
+import { NameListUpdateMessage } from 'shared/messages/name-list-update'
 
 const wss = new WebSocketServer({
     port: 4221,
@@ -32,6 +33,7 @@ const wss = new WebSocketServer({
 let entityChanges = true;
 const entityList: {[id:string]:Player} = {};
 const clientList: {[id:string]:WebSocket} = {};
+const nameList: {[id:string]:string} = {};
 
 function broadcast(message: ((id: string) => string) | string, excludeId?: string) {
     if (message instanceof Function) {
@@ -81,17 +83,28 @@ wss.on('connection', (ws) => {
                 const ropeFireMessage: RopeFireMessage = data
                 broadcast(rawdata.toString(), id)
                 break;
+            case MessageType.PLAYER_IDENTIFICATION:
+                const identificationMessage: PlayerIdentificationMessage = data
+                nameList[id] = identificationMessage.id!!.toUpperCase()
+                break;
         }
     });
 
     ws.on('close', (code, reason) => {
         delete clientList[id]
         delete entityList[id]
+        delete nameList[id]
     });
 
     ws.send(JSON.stringify(new PlayerIdentificationMessage({id: id})))
     ws.send(JSON.stringify(new EntityListUpdateMessage({entities: Object.values(entityList)})))
 });
+
+const broadcastNames = () => {
+    broadcast(JSON.stringify(new NameListUpdateMessage({nameList})))
+    setTimeout(broadcastNames, 500)
+}
+broadcastNames()
 
 
 /*const now = () => {
