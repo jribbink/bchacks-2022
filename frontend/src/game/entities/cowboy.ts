@@ -11,11 +11,13 @@ export class Cowboy extends Entity {
     status: string;                        // directions, throw direction, grabbed
     rope? : Rope;
     delay: number;
+    deathCount: number;
 
     constructor(x: number, y: number){
         super(x, y);                 // placeholder initial coords
         this.width = 64
         this.height = 96
+        this.deathCount =0;
     }
 
     throwLasso(targ: number[], game: Game){
@@ -29,12 +31,20 @@ export class Cowboy extends Entity {
     }
 
     update(game: Game, delta: number) {
-        
+        if(this.status=='fallen'){
+            console.log(this.status+" " +this.deathCount)
+            if(this.deathCount>=100){
+                
+                this.status ='dead'
+            }else{
+                this.deathCount+=0.7
+            }
+        }
 
         let pos : number[] = this.position;
         let h : number[] = game.hole.position;
         if(Math.sqrt(Math.pow(pos[0]-h[0],2) + Math.pow(pos[1]-h[1], 2)) < game.hole.r){
-            if(this.status != "fallen")
+            if(this.status != "fallen" && this.status != "dead")
             {
                 this.status="fallen"
                 wilhelm.play();

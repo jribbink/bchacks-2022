@@ -107,7 +107,8 @@ export class Game {
         this.context.drawImage(Images.Instance.images["hole"],entity.x-90,entity.y-90)
       }
       if(entity instanceof Cowboy){
-        
+        if(entity.status=='dead'){}
+        else{
         // this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
         if(entity instanceof LocalPlayer){
           this.context.beginPath();
@@ -128,7 +129,13 @@ export class Game {
           else
             this.context.drawImage(Images.Instance.images["cowboy_grabbed"],entity.x-entity.width/2,entity.y-entity.height/2);    //temp
         }else if(entity.status == 'fallen'){
-
+          this.context.save()
+          this.context.translate(400,300);
+          this.context.rotate(Math.random()*2*Math.PI);
+          
+          this.context.drawImage(Images.Instance.images["cowboy_grabbed"], entity.deathCount*-1*entity.width/200,-entity.height/200*entity.deathCount);
+          
+          this.context.restore();
         }
         else if(entity.status == 'left') {
           this.context.translate(entity.x + entity.width, entity.y)
@@ -138,6 +145,7 @@ export class Game {
         } else {
           this.context.drawImage(Images.Instance.images["cowboy_stand"],entity.x-entity.width/2,entity.y-entity.height/2);
         }
+      }
         //sprites.appendChild(sprite);
       }
       if(entity instanceof Rope){

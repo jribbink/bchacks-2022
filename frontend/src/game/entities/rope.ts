@@ -69,7 +69,7 @@ export class Rope extends Entity {
         }
         if(!this.grabbed){
             g.entityList.every(entity => {
-                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbedLeft" && entity.status != "grabbedRightss" && entity.status != "fallen"){
+                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbedLeft" && entity.status != "grabbedRightss" && entity.status != "fallen"&& entity.status != "dead"){
                     if(this.x > entity.x-entity.width/2  && this.x<entity.x+entity.width/2 
                         && this.y>entity.y -entity.height/2 && this.y <entity.y+entity.height/2){
                         this.x=entity.x;
