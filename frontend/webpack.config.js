@@ -14,7 +14,7 @@ const config = {
   devServer: {
     open: true,
     host: "localhost",
-    port: 3000
+    port: 3001
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -45,7 +45,7 @@ const config = {
         use: ['style-loader', "css-loader", "sass-loader"],
       },
       {
-        test: /\.(png|mp3)/,
+        test: /\.(png|mp3|jpg)/,
         type: 'asset/resource'
       },
 

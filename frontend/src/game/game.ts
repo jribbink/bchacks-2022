@@ -1,6 +1,7 @@
 import { Entity, Cowboy, Rope, Hole, RopeState } from "./entities"
 import { LocalPlayer } from "./entities/localplayer";
 import { GameServer } from "./gameserver";
+import { StartScreen } from "./start-screen";
 import { Images } from "./util/images";
 
 const rope = require("../assets/sprites/ropehead.png")
@@ -9,55 +10,55 @@ export class Game {
   public canvas: HTMLCanvasElement;
   public context: CanvasRenderingContext2D;
 
-  public localPlayer: LocalPlayer;
-  entityList: Entity[];
-  
-  //private img: HTMLImageElement;
-//  private ropehead: HTMLImageElement;
-//  private ropebody: HTMLImageElement;
-  //public playerSprite: HTMLImageElement[];
+  private lastFrame?: number;
+
   public walk1: HTMLImageElement;
   public walk2: HTMLImageElement;
   public walk3: HTMLImageElement;
   public walk4: HTMLImageElement;
 
   public hole: Hole;
+  public localPlayer: LocalPlayer;
+  public entityList: Entity[];
 
-  private lastFrame?: number;
-
+  public loaded = false
   public gameServer: GameServer;
+
+  private startScreen: StartScreen
 
   constructor() {
     // Start loading images
     Images.Instance
 
-    // Load websocket server
-    this.gameServer = new GameServer(this)
-
+    // Init Canvas
     this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!!;
 
     this.canvas.style.width = "800px";
     this.canvas.style.height = "600px";
-    
-    this.entityList = [];
+
+    // Create localPlayer object
     this.localPlayer = new LocalPlayer(this);
-    this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90)
-    this.entityList.push(this.hole);
-    this.entityList.push(this.localPlayer);
 
     this.walk1=Images.Instance.images["cowboy_1"];
     this.walk2=Images.Instance.images["cowboy_2"];
     this.walk3=Images.Instance.images["cowboy_3"];
     this.walk4=Images.Instance.images["cowboy_4"];
 
-    ///while, server has cowboys/players????
-    //this.entitylist.push(player.cowboy)
     this.entityList.push(new Cowboy(600,400))
-    console.log(this.canvas);
-    console.log(this.context);
+    // Load websocket server
+    this.gameServer = new GameServer(this)
 
+    this.startScreen = new StartScreen(this)
     this.waitUntilLoaded()
+  }
+
+  startGame () {
+    this.entityList = [];
+    this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90)
+    this.entityList.push(this.hole);
+    this.entityList.push(this.localPlayer);
+    this.loop()
   }
 
   calculateDelta (): number {
@@ -68,15 +69,16 @@ export class Game {
   }
 
   waitUntilLoaded () {
-    if (!Images.Instance.loaded) {
+    if (!Images.Instance.loaded || !this.gameServer.connected) {
       console.log("loading")
       setTimeout(this.waitUntilLoaded.bind(this), 0);
     } else {
-      setTimeout(this.loop.bind(this), 0);
+      setTimeout(this.startScreen.begin.bind(this.startScreen), 0);
     }
   }
 
-  loop () {  
+  loop () {
+    this.loaded = true
     this.update();
     this.render();
     setTimeout(this.loop.bind(this), 0);

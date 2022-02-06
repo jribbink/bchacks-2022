@@ -12,7 +12,7 @@ export class Images
         "cowboy_whip": require("../../assets/sprites/l0_cowman_whip.png"),
         "cowboy_grabbed": require("../../assets/sprites/grabbedr.png"),
         "hole": require("../../assets/sprites/gaping_hole.png"),
-        "back": require("../../assets/sprites/background.png"),
+        "back": require("../../assets/sprites/background.png")
     }
 
     public images: {[name:string]:HTMLImageElement} = {}

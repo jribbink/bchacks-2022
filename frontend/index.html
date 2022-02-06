@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <title>Holey Homestead</title>
   </head>
-  <body><center>
-    <h1>Holey Homestead</h1>
-
-    <canvas id="canvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
-   
-  </center>
-
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <img id="start_image" src="" />
+        <div class="menu">
+          <img class="title" id="title_image" src="" />
+          <button id="start-button">Enter Game</button>
+          <span class="credits">Created by Jordan Colledge, Gabriel McLachlan, Jordan Ribbink</span>
+        </div>
+        <canvas id="canvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
+      </div>
+    </div>
   <style>
     body {
       /* If you want to implement it in very old browser-versions */
@@ -23,7 +28,82 @@
 
       /* The rule below is implemented in most browsers by now */
       user-select: none;
+      margin:0;
+    }
+
+    .wrapper {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      display: none;
+    }
+
+    .container {
+      position: relative;
+      width: 800px;
+      height: 600px;
+    }
+    .menu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 25px;
+      font-family: 'Courier New', monospace;
+    }
+    .title {
+      width: 100%;
+    }
+    #start-button {
+      cursor: pointer;
+      margin-top: auto;
+      margin-bottom: auto;
+      padding: 65px;
+      border-radius: 15px;
+      font-size: 1.75em;
+      font-weight:600;
+      background-color: rgba(200,200,200,1);
+      opacity: 0.7;
+      transition: all 1.0s ease;
+      -webkit-transition: all 1.0s ease;
+    }
+    #start-button:hover {
+      box-shadow: 0 4px 8px 10px rgba(0, 0, 0, 0.5), 0 6px 20px 15px rgba(0, 0, 0, 0.5);
+      background-color: rgba(255,255,255,1);
+      opacity: 1;
+      font-size: 2.25em;
+    }
+    .credits {
+      color: white;
+      padding-top: 40px;
+    }
+    #background-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
     }
   </style>
+  <script>
+    //document.addEventListener('contextmenu', event => event.preventDefault());
+  </script>
   </body>
 </html>
