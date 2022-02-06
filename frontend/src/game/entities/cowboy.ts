@@ -7,8 +7,6 @@ import { Hole } from "./hole"
 export class Cowboy extends Entity {
     status: string;                        // directions, throw direction, grabbed
     rope? : Rope;
-    width: number;
-    height: number;
 
     constructor(x: number, y: number){
         super(x, y);                 // placeholder initial coords
@@ -27,7 +25,6 @@ export class Cowboy extends Entity {
         let pos : number[] = this.position;
         let h : number[] = game.hole.position;
         if(Math.sqrt(Math.pow(pos[0]-h[0],2) + Math.pow(pos[1]-h[1], 2)) < game.hole.r){
-                console.log(this.x +" " + this.y)
                 this.status="fallen"
         }
     }

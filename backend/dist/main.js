@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
+const message_type_1 = require("./enum/message-type");
+const messages_1 = require("./messages");
 const wss = new ws_1.WebSocketServer({
     port: 8080,
     perMessageDeflate: {
@@ -23,8 +25,50 @@ const wss = new ws_1.WebSocketServer({
         // should not be compressed if context takeover is disabled.
     }
 });
+const entityList = {};
+const clientList = {};
+function broadcast(message) {
+    if (message instanceof Function) {
+        for (let id in clientList) {
+            clientList[id].send(message(id));
+        }
+    }
+    else {
+        for (let id in clientList) {
+            clientList[id].send(message);
+        }
+    }
+}
+function getUniqueID() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
+    return s4() + s4() + '-' + s4();
+}
 wss.on('connection', (ws) => {
-    ws.on('message', (data) => {
+    const id = getUniqueID();
+    clientList[id] = ws;
+    ws.on('message', (rawdata) => {
+        const data = JSON.parse(rawdata.toString());
+        switch (data.type) {
+            case message_type_1.MessageType.PLAYER_UPDATE:
+                const message = data;
+                let player = message.player;
+                player.id = id;
+                entityList[id] = player;
+                console.log(entityList);
+                broadcast((id) => {
+                    return JSON.stringify(new messages_1.EntityListUpdateMessage({
+                        entities: Object.values(entityList).filter(entity => {
+                            return entity.id != id;
+                        })
+                    }));
+                });
+                break;
+        }
     });
-    ws.send("handshake");
+    ws.on('close', (code, reason) => {
+        delete clientList[id];
+    });
+    ws.send(JSON.stringify(new messages_1.EntityListUpdateMessage({ entities: Object.values(entityList) })));
 });

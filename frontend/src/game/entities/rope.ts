@@ -31,6 +31,9 @@ export class Rope extends Entity {
 
         this.x = this.owner.x
         this.y = this.owner.y
+
+        this.width=25
+        this.height=25
     }
 
     updatePosition(delta: number)
@@ -49,19 +52,22 @@ export class Rope extends Entity {
         let collidingWith: Entity;
         if(!this.grabbed){
             g.entityList.every(entity => {
-                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbed"){
+                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbed" && entity.status != "fallen"){
                     if(this.x > entity.x-entity.width/2  && this.x<entity.x+entity.width/2 
                         && this.y>entity.y -entity.height/2 && this.y <entity.y+entity.height/2){
-                        collidingWith = entity;
+                        
+                        console.log(this.owner +" grabbed" + entity)
+                                collidingWith = entity;
                         return false;
                     } //hit detection ///cowboy x and y, y+- png yval, x+-png yva
                 }
                 return true;
             })
 
-            if(!collidingWith && collidingWith instanceof Cowboy && collidingWith != this.owner)
+            if(collidingWith && collidingWith instanceof Cowboy && collidingWith != this.owner)
             {
                 collidingWith.status = "grabbed"
+                this.grabbed = collidingWith;
                 this.state = RopeState.PULLING;
             }
         }
@@ -82,9 +88,17 @@ export class Rope extends Entity {
         }
         else if(this.grabbed)
         {
+            if(this.grabbed.status == "fallen")
+            {
+                this.grabbed = null;
+                this.state = RopeState.RETRACTING;
+            }
+            else
+            {
+                this.grabbed.x += this.ropeSpeed * delta * this.state * Math.cos(this.angle)
+                this.grabbed.y += this.ropeSpeed * delta * this.state * Math.sin(this.angle)
+            }
             this.updatePosition(delta)
-            this.grabbed.x += this.ropeSpeed * delta * this.state * Math.cos(this.angle)
-            this.grabbed.y += this.ropeSpeed * delta * this.state * Math.sin(this.angle)
         }
         else
         {

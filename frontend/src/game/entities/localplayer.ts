@@ -44,7 +44,7 @@ export class LocalPlayer extends Player {
 
     updatePosition (delta: number) {
         if(this.cowboy.rope) return;
-        if(this.cowboy.status == "grabbed") return;
+        if(this.cowboy.status == "grabbed" || this.cowboy.status == "fallen") return;
 
         
         let hitboxX= 16; let hitboxY = 32;              //replace with cowboy.width/2 and cowboy.height/2

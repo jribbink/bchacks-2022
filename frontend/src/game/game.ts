@@ -10,6 +10,10 @@ export class Game {
   entityList: Entity[];
   
   private img: HTMLImageElement;
+  private ropehead: HTMLImageElement;
+  private ropebody: HTMLImageElement;
+  
+
   public hole: Hole;
 
   private lastFrame?: number;
@@ -22,6 +26,8 @@ export class Game {
     this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!!;
     this.img = document.getElementById("img") as HTMLImageElement;
+    this.ropehead = document.getElementById("ropehead") as HTMLImageElement;
+    this.ropebody = document.getElementById("ropebody") as HTMLImageElement;
 
     this.canvas.style.width = "800px";
     this.canvas.style.height = "600px";
@@ -78,7 +84,13 @@ export class Game {
       this.context.beginPath();
       this.context.arc(entity.x, entity.y, 2, 0, 2 * Math.PI);
       this.context.stroke(); 
-      this.context.drawImage(this.img, entity.x, entity.y);
+      if(entity instanceof Cowboy){
+        this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
+      }
+      if(entity instanceof Rope){
+        this.context.drawImage(this.ropehead, entity.x-entity.width/2, entity.y-entity.height/2);
+        
+      }
     })
   }
 

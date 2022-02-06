@@ -2,6 +2,7 @@
 
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV == "production";
 
@@ -18,7 +19,7 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html",
-    }),
+    })
 
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
@@ -48,18 +49,7 @@ const config = {
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
-    fallback: {
-      "fs": false,
-      "tls": false,
-      "net": false,
-      "path": false,
-      "zlib": false,
-      "http": false,
-      "https": false,
-      "stream": false,
-      "crypto": false,
-    }
+    extensions: [".tsx", ".ts", ".js", ".png"]
   },
   devtool: 'cheap-module-source-map'
 };

@@ -1,74 +1,81 @@
-import { WebSocketServer } from "ws"
-import { MessageType } from "./enum/message-type";
-import { EntityListUpdateMessage, Message, PlayerUpdateMessage } from './messages'
+import { WebSocketServer, WebSocket } from "ws";
 import { Player } from './models/player'
-import { IDSocket } from './models/id-socket'
+import { MessageType } from './enum/message-type'
+import { EntityListUpdateMessage } from './messages'
 
 const wss = new WebSocketServer({
     port: 8080,
     perMessageDeflate: {
         zlibDeflateOptions: {
-        // See zlib defaults.
-        chunkSize: 1024,
-        memLevel: 7,
-        level: 3
+            // See zlib defaults.
+            chunkSize: 1024,
+            memLevel: 7,
+            level: 3
         },
         zlibInflateOptions: {
-        chunkSize: 10 * 1024
+            chunkSize: 10 * 1024
         },
         // Other options settable:
-        clientNoContextTakeover: true, // Defaults to negotiated value.
-        serverNoContextTakeover: true, // Defaults to negotiated value.
-        serverMaxWindowBits: 10, // Defaults to negotiated value.
+        clientNoContextTakeover: true,
+        serverNoContextTakeover: true,
+        serverMaxWindowBits: 10,
         // Below options specified as default values.
-        concurrencyLimit: 10, // Limits zlib concurrency for perf.
+        concurrencyLimit: 10,
         threshold: 1024 // Size (in bytes) below which messages
         // should not be compressed if context takeover is disabled.
     }
 });
 
-const entityList: {[id:string]:Player} = {}
-const clientList: {[id:string]:IDSocket} = {}
+const entityList: {[id:string]:Player} = {};
+const clientList: {[id:string]:WebSocket} = {};
 
-function broadcast (message: (id: string) => string | any) {
-    if(message instanceof Function) {
+function broadcast(message: (id: string) => string | string) {
+    if (message instanceof Function) {
         for (let id in clientList) {
-            clientList[id].send(message(id))
+            clientList[id].send(message(id));
         }
-    } else {
+    }
+    else {
         for (let id in clientList) {
-            clientList[id].send(message)
+            clientList[id].send(message);
         }
     }
 }
 
-wss.on('connection', (ws: IDSocket) => {
-    console.log(ws.id)
-    clientList[ws.id] = ws
+function getUniqueID() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
+    return s4() + s4() + '-' + s4();
+}
 
-    ws.on('message', (data: Message) => {
+wss.on('connection', (ws) => {
+    const id = getUniqueID();
+    clientList[id] = ws;
+
+    ws.on('message', (rawdata) => {
+        const data = JSON.parse(rawdata.toString());
         switch (data.type) {
             case MessageType.PLAYER_UPDATE:
-                const message = data as PlayerUpdateMessage
-                let player = message.player!!
-                player.id = ws.id
-
-                entityList[ws.id] = player
-
-                broadcast((id) => {
-                    ws.send(new EntityListUpdateMessage({
+                const message = data;
+                let player = message.player;
+                player.id = id;
+                entityList[id] = player;
+                
+                broadcast((id: string) => {
+                    return JSON.stringify(new EntityListUpdateMessage({
                         entities: Object.values(entityList).filter(entity => {
-                            return entity.id != id
+                            return entity.id != id;
                         })
                     }))
-                })
+                });
                 break;
         }
-    })
+    });
 
     ws.on('close', (code, reason) => {
-        delete clientList[ws.id]
-    })
+        delete clientList[id];
+    });
 
-    ws.send(new EntityListUpdateMessage({entities: Object.values(entityList)}))
-})
+    ws.send(JSON.stringify(new EntityListUpdateMessage({entities: Object.values(entityList)})))
+});
