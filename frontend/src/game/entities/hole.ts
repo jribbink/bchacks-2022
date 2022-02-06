@@ -1,3 +1,4 @@
+import { Game } from "../game";
 import { Entity } from "./entity"
 
 export class Hole extends Entity {
@@ -11,6 +12,14 @@ export class Hole extends Entity {
     }
     
     checkFall(){
+        
+    }
+
+    update(g: Game, delta: number) {
+
+    }
+
+    render(game: Game) {
         
     }
 }

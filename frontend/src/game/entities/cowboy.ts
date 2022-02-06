@@ -15,15 +15,23 @@ export class Cowboy extends Entity {
     throwLasso(targ: number[]){
         this.rope = new Rope(this);
         this.rope.length = 0;
+        this.rope.angle = Math.atan2((targ[1] - this.y), (targ[0] - this.x));
+        console.log(this.rope.angle)
 
-        this.rope.angle = Math.atan((targ[1] - this.y)/(targ[0] - this.x));
-        if(targ[0] < this.x) this.rope.angle += Math.PI;
-
-        this.rope.status = "thrown";
+        this.rope.state = 1;
         this.status = "throwing";
     }
 
-    isCowboy(): boolean {
-        return true;
+    update(game: Game) {
+        let pos : number[] = this.position;
+        let h : number[] = game.hole.position;
+        if(Math.sqrt(Math.pow(pos[0]-h[0],2) + Math.pow(pos[1]-h[1], 2)) > game.hole.r)
+        {
+                // have player fall
+        }
+    }
+
+    render(game: Game) {
+        
     }
 }

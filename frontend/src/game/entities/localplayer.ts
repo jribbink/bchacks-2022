@@ -29,23 +29,25 @@ export class LocalPlayer extends Player {
         this.game = game;
 
         // Register mousedown handler for clicks
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         this.game.canvas.onmousedown = this.mouseHandler.bind(this);
     }
 
     mouseHandler (e: MouseEvent) {
-        console.log(e)
-        console.log(e.clientX +" " + e.clientY);
-        console.log(this.cowboy);
-        this.cowboy.throwLasso([e.clientX, e.clientY]);
+        var rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+        const coords = [e.clientX - rect.left, e.clientY - rect.top]
+        this.cowboy.throwLasso(coords);
+        this.game.pushEntity(this.cowboy.rope);
     }
 
     updatePosition (delta: number) {
-        for (let key in controls)
+        if(!this.cowboy.rope)
         {
-            if(Keyboard.Instance.isKeyDown(key))
+            for (let key in controls)
             {
-                controls[key](this, delta)
+                if(Keyboard.Instance.isKeyDown(key))
+                {
+                    controls[key](this, delta)
+                }
             }
         }
     }

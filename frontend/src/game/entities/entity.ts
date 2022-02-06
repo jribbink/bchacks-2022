@@ -1,4 +1,6 @@
-export class Entity {
+import { Game } from "../game";
+
+export abstract class Entity {
     public x : number;
     public y : number;
 
@@ -7,15 +9,10 @@ export class Entity {
         this.y = y;
     }
 
-    isCowboy() {
-        return false;
-    }
-
-    isRope() {
-        return false;
-    }
-    
     get position () {
         return [this.x,this.y]
     }
+
+    abstract update (game: Game, delta: number): void
+    abstract render (game: Game): void
 }

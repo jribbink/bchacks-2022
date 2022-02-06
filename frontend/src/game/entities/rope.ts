@@ -1,11 +1,18 @@
 import { Entity } from "./entity";
 import { Cowboy } from "./cowboy";
+import { Game } from "../game";
+
+export enum RopeState {
+    RETRACTING = -1,
+    STABLE = 0,
+    EXTENDING = 1
+}
 
 export class Rope extends Entity {
     private owner : Cowboy;                     // who's throwing it
-    targetTheta : number;
+    angle : number;
     lassoDist : number;
-    state? : string;                   // thrown / retracting / idle
+    state : RopeState;
     ropeSpeed : number;
     ropeMaxLen : number;
 
@@ -13,13 +20,12 @@ export class Rope extends Entity {
     {
         super(owner.x, owner.y);
         this.owner = owner;
-        this.targetTheta = 0;
+        this.angle = 0;
         this.lassoDist = 0;
-        this.state = "idle";
+        this.state = RopeState.EXTENDING;
 
         this.ropeSpeed = 1;                 // default numbers
-        this.ropeMaxLen = 10;               // ie placeholders, please change
-
+        this.ropeMaxLen = 500;               // ie placeholders, please change
 
         this.x = this.owner.x
         this.y = this.owner.y
@@ -27,31 +33,39 @@ export class Rope extends Entity {
 
     updatePosition(delta: number)
     {
-        if(this.state === "thrown")
-        {
-            this.lassoDist += this.ropeSpeed * delta;
-        }
-        if(this.state === "retracting")
-        {
-            this.lassoDist -= this.ropeSpeed * delta;
-        }
-    }
+        this.lassoDist += this.ropeSpeed * delta * this.state;
 
-    isRope(): boolean {
-        return true;
+        this.x = this.owner.x+this.lassoDist*Math.cos(this.angle)
+        this.y = this.owner.y+this.lassoDist*Math.sin(this.angle)
     }
 
     set length (d : number) {
         this.lassoDist = d;
     }
 
-    set angle (theta : number)
+    update(g: Game, delta: number)
     {
-        this.targetTheta = theta;
+        if(this.lassoDist <= 0 && this.state == -1)
+        {
+            this.state = 0;
+            g.removeEntity(this)
+            this.owner.rope = null
+        }
+        else
+        {
+            if (this.lassoDist >= this.ropeMaxLen)
+                this.state = RopeState.RETRACTING
+            this.updatePosition(delta)
+        }
     }
 
-    set status (s : string)
-    {
-        this.state = s;
+    render(game: Game) {
+        game.context.beginPath();
+        game.context.arc(
+            this.x, 
+            this.y, 
+            90, 0, 2 * Math.PI
+        );
+        game.context.stroke(); 
     }
 }

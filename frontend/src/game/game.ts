@@ -1,16 +1,16 @@
-import { Entity, Cowboy, Rope, Hole } from "./entities"
+import { Entity, Cowboy, Rope, Hole, RopeState } from "./entities"
 import { LocalPlayer } from "./entities/localplayer";
 import { GameServer } from "./gameserver";
 
 export class Game {
   public canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
+  public context: CanvasRenderingContext2D;
 
   private localPlayer: LocalPlayer;
   private entityList: Entity[];
   
   private img: HTMLImageElement;
-  private hole: Hole;
+  public hole: Hole;
 
   private lastFrame?: number;
 
@@ -55,34 +55,8 @@ export class Game {
       const delta = this.calculateDelta()
       this.localPlayer.updatePosition(delta)
 
-      
-
       this.entityList.forEach(entity => {
-        
-        if(entity.isCowboy()) {
-          let pos : number[] = entity.position;
-          let h : number[] = this.hole.position;
-          if(Math.sqrt(Math.pow(pos[0]-h[0],2) + Math.pow(pos[1]-h[1], 2)) > this.hole.r)
-          {
-                  // have player fall
-          }
-        }
-
-        if(entity.isRope()) {
-          let rope : Rope = entity as Rope;
-          if(rope.lassoDist <= 0)
-          {
-            rope.state = "idle";
-            this.entityList.splice(this.entityList.indexOf(entity), 1)
-          }
-          else
-          {
-            if(rope.lassoDist >= rope.ropeMaxLen)
-              rope.status = "retracting";
-            
-            rope.updatePosition(delta);
-          }
-        }
+        entity.update(this, delta);
       })
 
       //do other background stuff
@@ -91,34 +65,28 @@ export class Game {
   render () {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); //clears canvas
 
-      this.context.beginPath();//draws the hole
+      this.context.beginPath(); //draws the hole
       this.context.arc(this.hole.x, this.hole.y, this.hole.r, 0, 2 * Math.PI);
       this.context.stroke();
 
 
     this.entityList.forEach(entity => {
+      entity.render(this)
       
       this.context.beginPath();
       this.context.arc(entity.x, entity.y, 2, 0, 2 * Math.PI);
       this.context.stroke(); 
-      this.context.drawImage(this.img, entity.x, entity.y);
-
-      if(entity.isRope())
-      {
-        let rope : Rope = entity as Rope;
-        if(rope.status=="thrown" || rope.status == "retracting"){
-          this.context.beginPath();
-          this.context.arc((rope.x+rope.lassoDist*Math.cos(rope.targetTheta)), (rope.x+rope.lassoDist*Math.sin(rope.targetTheta)), 5, 0, 2 * Math.PI);
-          this.context.stroke(); 
-        }
-      }
-
-
+     // this.context.drawImage(this.img, entity.x, entity.y);
     })
   }
 
   pushEntity (e: Entity)
   {
     this.entityList.push(e);
+  }
+
+  removeEntity (e: Entity)
+  {
+    this.entityList.splice(this.entityList.indexOf(e), 1)
   }
 }
