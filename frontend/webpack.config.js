@@ -2,6 +2,7 @@
 
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV == "production";
 
@@ -18,6 +19,11 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html",
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+          { from: './src/assets' }
+      ]
     })
 
     // Add your plugins here

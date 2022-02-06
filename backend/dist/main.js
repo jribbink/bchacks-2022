@@ -26,6 +26,7 @@ const wss = new ws_1.WebSocketServer({
         // should not be compressed if context takeover is disabled.
     }
 });
+let entityChanges = true;
 const entityList = {};
 const clientList = {};
 function broadcast(message, excludeId) {
@@ -60,7 +61,6 @@ wss.on('connection', (ws) => {
                 let player = updateMessage.player;
                 player.id = id;
                 entityList[id] = player;
-                /* MOVE ME TO LOOP!! (and only update every 1 sec/ if changes available) */
                 broadcast((id) => {
                     return JSON.stringify(new entity_list_update_1.EntityListUpdateMessage({
                         entities: Object.values(entityList).filter(entity => {
@@ -82,3 +82,13 @@ wss.on('connection', (ws) => {
     ws.send(JSON.stringify(new player_identification_1.PlayerIdentificationMessage({ id: id })));
     ws.send(JSON.stringify(new entity_list_update_1.EntityListUpdateMessage({ entities: Object.values(entityList) })));
 });
+/*const now = () => {
+    const hrTime = process.hrtime();
+    return hrTime[0] * 1000000 + hrTime[1] / 1000;
+};
+let startTime = now()
+function stateLoop () {
+    
+    setImmediate(stateLoop)
+}
+stateLoop()*/ 

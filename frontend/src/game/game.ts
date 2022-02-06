@@ -91,6 +91,8 @@ export class Game {
   render () {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); //clears canvas
 
+          this.context.drawImage(Images.Instance.images["back"],0,0)
+
       this.context.beginPath(); //draws the hole
       this.context.arc(this.hole.x, this.hole.y, this.hole.r, 0, 2 * Math.PI);
       this.context.stroke();
@@ -98,26 +100,38 @@ export class Game {
 
     this.entityList.forEach(entity => {
       entity.render(this)
-      
-      this.context.beginPath();
-      this.context.arc(entity.x, entity.y, 16, 0, 2 * Math.PI);
-      this.context.stroke(); 
-      if(entity instanceof LocalPlayer){
+      if(entity instanceof Hole){
+        this.context.drawImage(Images.Instance.images["hole"],entity.x-90,entity.y-90)
+      }
+      if(entity instanceof Cowboy){
         // this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
-        this.context.beginPath();
-        this.context.arc(entity.x, entity.y, 48, 0, 2 * Math.PI * entity.delay / 420);
-        this.context.stroke();
+        if(entity instanceof LocalPlayer){
+          this.context.beginPath();
+          this.context.arc(entity.x, entity.y, 48, 0, 2 * Math.PI * entity.delay / 420);
+          this.context.stroke();
+        }
 
         //let sprites = document.getElementById("cowboyWalk") as HTMLImageElement[]
         //let sprite = sprites[0]
-        //if(entity.state == 'left') {
-        //  this.context.translate(entity.x + entity.width, entity.y)
-        //  this.context.scale(-1,1)
-        //  this.context.drawImage(sprite,0,0)
-        //  this.context.setTransform(1,0,0,1,0,0)
-        //} else {
-        //  this.context.drawImage(sprite,entity.x,entity.y);
-        //}
+        if(entity.status == 'grabbedLeft' || entity.status == 'grabbedRight'){
+          //this.context.drawImage(Images.Instance.images["cowboy_grabbed"],entity.x-entity.width/2,entity.y-entity.height/2)
+          if(entity.status == 'grabbedLeft'){
+            this.context.translate(entity.x + entity.width, entity.y)
+            this.context.scale(-1,1)
+            this.context.drawImage(Images.Instance.images["cowboy_grabbed"], entity.width/2, -entity.height/2)        // temp
+            this.context.setTransform(1,0,0,1,0,0)
+          }
+          else
+            this.context.drawImage(Images.Instance.images["cowboy_grabbed"],entity.x-entity.width/2,entity.y-entity.height/2);    //temp
+        }
+        else if(entity.status == 'left') {
+          this.context.translate(entity.x + entity.width, entity.y)
+          this.context.scale(-1,1)
+          this.context.drawImage(Images.Instance.images["cowboy_stand"], entity.width/2, -entity.height/2)
+          this.context.setTransform(1,0,0,1,0,0)
+        } else {
+          this.context.drawImage(Images.Instance.images["cowboy_stand"],entity.x-entity.width/2,entity.y-entity.height/2);
+        }
         //sprites.appendChild(sprite);
       }
       if(entity instanceof Rope){
@@ -127,8 +141,8 @@ export class Game {
         //let sprites = document.getElementById("ropeCycle").children;
         //let sprite: HTMLImageElement = sprites[0] as HTMLImageElement
         this.context.translate(entity.owner.x + 28 * Math.sin(entity.angle) * entity.lassoDist/500, entity.owner.y - 28 * Math.cos(entity.angle) * entity.lassoDist/500);
-        this.context.scale(entity.lassoDist/500,entity.lassoDist/500);
         this.context.rotate(entity.angle);
+        this.context.scale(entity.lassoDist/410,.5);
         
         this.context.drawImage(Images.Instance.images["ropebody"], 0,0);
           this.context.setTransform(1,0,0,1,0,0)
@@ -137,7 +151,7 @@ export class Game {
         //sprites.appendChild(sprite);
         
         if(!entity.grabbed)
-          this.context.drawImage(Images.Instance.images["ropehead"], 0,0)
+          this.context.drawImage(Images.Instance.images["ropehead"], entity.x - 42,entity.y - 38)
         // else no need to draw rope head -- grabbed entity is a cowboy with rope around him anyway
       }
     })

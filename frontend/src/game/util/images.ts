@@ -4,7 +4,15 @@ export class Images
     private static readonly _imageList: {[key:string]:string} = {
         "ropehead": require("../../assets/sprites/ropehead.png"),
         "ropebody": require("../../assets/sprites/rope1.png"),
-        "cowboy_stand": require('../../assets/sprites/l0_cowman_stand.png')
+        "cowboy_stand": require("../../assets/sprites/l0_cowman_stand.png"),
+        "cowboy_1": require("../../assets/sprites/l0_cowman_1.png"),
+        "cowboy_2": require("../../assets/sprites/l0_cowman_2.png"),
+        "cowboy_3": require("../../assets/sprites/l0_cowman_3.png"),
+        "cowboy_4": require("../../assets/sprites/l0_cowman_4.png"),
+        "cowboy_whip": require("../../assets/sprites/l0_cowman_whip.png"),
+        "cowboy_grabbed": require("../../assets/sprites/grabbedr.png"),
+        "hole": require("../../assets/sprites/gaping_hole.png"),
+        "back": require("../../assets/sprites/background.png"),
     }
 
     public images: {[name:string]:HTMLImageElement} = {}
@@ -13,7 +21,6 @@ export class Images
 
     private constructor()
     {
-        console.log("OK")
         for (let key in Images._imageList) {
             this.images[key] = new Image()
             this.images[key].onload = (e: Event) => {
