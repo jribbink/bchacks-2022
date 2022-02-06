@@ -80,6 +80,6 @@ export class LocalPlayer extends Player {
     }
 
     render (game: Game) {
-
+        super.render(game)
     }
 }

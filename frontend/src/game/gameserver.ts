@@ -6,6 +6,7 @@ import { Rope, RopeState } from "./entities"
 
 import { Message } from 'shared/messages'
 import { EntityListUpdateMessage } from 'shared/messages/entity-list-update'
+import { NameListUpdateMessage } from 'shared/messages/name-list-update'
 import { PlayerIdentificationMessage } from 'shared/messages/player-identification'
 import { PlayerUpdateMessage } from 'shared/messages/player-update'
 import { RopeFireMessage } from 'shared/messages/rope-fire'
@@ -21,6 +22,7 @@ export class GameServer {
     constructor (game: Game) {
         this.game = game
         this.ws = new WebSocket(`wss://hhsbackend.ribbink.ca`)
+        //this.ws = new WebSocket(`ws://localhost:4221`)
         this.ws.onopen = (e:Event) => {
             console.log("Websocket Connected!")
             this.connected = true
@@ -80,8 +82,24 @@ export class GameServer {
                     rope.state = RopeState.EXTENDING;
                     game.entityList.push(rope)
                     break;
+                case MessageType.NAME_LIST_UPDATE:
+                    if(!game.entityList) return
+
+                    let nameListMessage: NameListUpdateMessage = message
+                    console.log(nameListMessage)
+                    game.entityList.forEach((entity) => {
+                        if(entity instanceof Player && Object.keys(nameListMessage.nameList).includes(entity.id)) {
+                            entity.name = nameListMessage.nameList[entity.id]
+                        }
+                    })
+                    break;
             }
         }
+    }
+
+    identifySelf (name: string) {
+        const message = new PlayerIdentificationMessage({id: name})
+        this.ws.send(JSON.stringify(message))
     }
 
     updatePosition (delta: number) {

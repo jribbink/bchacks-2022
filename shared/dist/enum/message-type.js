@@ -8,4 +8,5 @@ var MessageType;
     MessageType[MessageType["PLAYER_IDENTIFICATION"] = 2] = "PLAYER_IDENTIFICATION";
     MessageType[MessageType["ROPE_FIRE"] = 3] = "ROPE_FIRE";
     MessageType[MessageType["ROPE_HIT"] = 4] = "ROPE_HIT";
+    MessageType[MessageType["NAME_LIST_UPDATE"] = 5] = "NAME_LIST_UPDATE";
 })(MessageType = exports.MessageType || (exports.MessageType = {}));

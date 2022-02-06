@@ -15,7 +15,9 @@ export class StartScreen {
         this.canvas = game.canvas
         this.context = game.context
         this.game = game
-        music.play()
+        document.onclick = () => {
+            music.play()
+        }
     }
 
     begin() {
@@ -38,9 +40,12 @@ export class StartScreen {
             
             let goButton = document.querySelectorAll("#name-input button")[0] as HTMLButtonElement
             goButton.onclick = () => {
+                const nameDOM = document.getElementById("name") as HTMLInputElement
+                const name = nameDOM.value ?? "A Cowboy"
                 this.canvas.style.display = "block"
                 name_input.style.display = "none"
                 start_button.style.display = "block"
+                this.game.localPlayer.name = name
                 this.game.startGame()
             }
         }

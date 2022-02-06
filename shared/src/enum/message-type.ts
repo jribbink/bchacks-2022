@@ -4,4 +4,5 @@ export enum MessageType {
     PLAYER_IDENTIFICATION,
     ROPE_FIRE,
     ROPE_HIT,
+    NAME_LIST_UPDATE,
 }

@@ -62,6 +62,7 @@ export class Game {
     this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90)
     this.entityList.push(this.hole);
     this.entityList.push(this.localPlayer);
+    this.gameServer.identifySelf(this.localPlayer.name)
     this.loop()
   }
 
@@ -115,7 +116,9 @@ export class Game {
         // this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
         if(entity instanceof LocalPlayer){
           this.context.beginPath();
-          this.context.arc(entity.x, entity.y, 48, 0, 2 * Math.PI * entity.delay / 420);
+          this.context.lineWidth = 4
+          this.context.arc(entity.x, entity.y, 52, 0, 2 * Math.PI * entity.delay / 420);
+          this.context.strokeStyle = "white"
           this.context.stroke();
         }
 
