@@ -85,7 +85,8 @@ wss.on('connection', (ws) => {
                 break;
             case MessageType.PLAYER_IDENTIFICATION:
                 const identificationMessage: PlayerIdentificationMessage = data
-                nameList[id] = identificationMessage.id!!.toUpperCase()
+                const name = identificationMessage.id!!.toUpperCase()
+                nameList[id] = (name.length > 12)?name.substring(0, 12):name
                 break;
         }
     });
