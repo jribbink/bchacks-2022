@@ -7,7 +7,7 @@ import { PlayerUpdateMessage } from 'shared/messages/player-update'
 import { RopeFireMessage } from 'shared/messages/rope-fire'
 
 const wss = new WebSocketServer({
-    port: 8080,
+    port: 4221,
     perMessageDeflate: {
         zlibDeflateOptions: {
             // See zlib defaults.
