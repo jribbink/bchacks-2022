@@ -8,19 +8,11 @@ const rope = require("../assets/sprites/ropehead.png")
 export class Game {
   public canvas: HTMLCanvasElement;
   public context: CanvasRenderingContext2D;
-
-  public localPlayer: LocalPlayer;
-  entityList: Entity[];
-  
-  private img: HTMLImageElement;
-  private ropehead: HTMLImageElement;
-  private ropebody: HTMLImageElement;
-  public playerSprite: HTMLImageElement;
-  
+  private lastFrame?: number;
 
   public hole: Hole;
-
-  private lastFrame?: number;
+  public localPlayer: LocalPlayer;
+  public entityList: Entity[];
 
   public gameServer: GameServer;
 
@@ -33,9 +25,6 @@ export class Game {
 
     this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!!;
-    this.img = document.getElementById("img") as HTMLImageElement;
-    this.ropehead = document.getElementById("ropehead") as HTMLImageElement;
-    this.ropebody = document.getElementById("ropebody") as HTMLImageElement;
 
     this.canvas.style.width = "800px";
     this.canvas.style.height = "600px";
@@ -48,7 +37,6 @@ export class Game {
 
     ///while, server has cowboys/players????
     //this.entitylist.push(player.cowboy)
-    this.entityList.push(new Cowboy(600,400))
     console.log(this.canvas);
     console.log(this.context);
 
