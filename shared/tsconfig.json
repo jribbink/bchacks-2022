@@ -13,8 +13,15 @@
       "src/index",
     ],
     "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "lib": ["es2016"]
+    "lib": ["es2016"],
+    "allowJs": false
   },
-  "include": ["src"],
+  "include": [
+    "./**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist/**/*",
+  ],
   "references": []  // * Any project that is referenced must itself have a `references` array (which may be empty).
 }
