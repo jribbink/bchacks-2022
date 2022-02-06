@@ -4,10 +4,17 @@
     /* Truncated compiler options to list only relevant options */
     "declaration": true, 
     "declarationMap": true,
-    "rootDir": ".",   
+    "rootDir": "./src",  
     "composite": true, 
     "moduleResolution": "node",
-    "outDir": "./dist"
+    "module": "commonjs",
+    "outDir": "./dist",
+    "typeRoots": [
+      "src/index",
+    ],
+    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "lib": ["es2016"]
   },
+  "include": ["src"],
   "references": []  // * Any project that is referenced must itself have a `references` array (which may be empty).
 }

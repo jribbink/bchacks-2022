@@ -10,7 +10,7 @@ export enum RopeState {
 }
 
 export class Rope extends Entity {
-    private owner : Cowboy;                     // who's throwing it
+     owner : Cowboy;                     // who's throwing it
     angle : number;
     lassoDist : number;
     state : RopeState;
@@ -55,7 +55,8 @@ export class Rope extends Entity {
                 if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbed" && entity.status != "fallen"){
                     if(this.x > entity.x-entity.width/2  && this.x<entity.x+entity.width/2 
                         && this.y>entity.y -entity.height/2 && this.y <entity.y+entity.height/2){
-                        
+                        this.x=entity.x;
+                        this.y = entity.y;
                         console.log(this.owner +" grabbed" + entity)
                                 collidingWith = entity;
                         return false;

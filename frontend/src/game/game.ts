@@ -21,7 +21,7 @@ export class Game {
   private gameServer: GameServer;
 
   constructor() {
-    this.gameServer = new GameServer()
+    this.gameServer = new GameServer(this)
 
     this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!!;
@@ -31,11 +31,12 @@ export class Game {
 
     this.canvas.style.width = "800px";
     this.canvas.style.height = "600px";
+    
     this.entityList = [];
+    this.localPlayer = new LocalPlayer(this);
     this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90)
     this.entityList.push(this.hole);
-    this.localPlayer = new LocalPlayer(new Cowboy(200, 300), this);
-    this.entityList.push(this.localPlayer.cowboy);
+    this.entityList.push(this.localPlayer);
 
     ///while, server has cowboys/players????
     //this.entitylist.push(player.cowboy)
@@ -61,7 +62,6 @@ export class Game {
 
   update () {
       const delta = this.calculateDelta()
-      this.localPlayer.updatePosition(delta)
 
       this.entityList.forEach(entity => {
         entity.update(this, delta);
@@ -82,16 +82,25 @@ export class Game {
       entity.render(this)
       
       this.context.beginPath();
-      this.context.arc(entity.x, entity.y, 2, 0, 2 * Math.PI);
+      this.context.arc(entity.x, entity.y, 5, 0, 2 * Math.PI);
       this.context.stroke(); 
       if(entity instanceof Cowboy){
-        this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
+       // this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
       }
       if(entity instanceof Rope){
-        this.context.drawImage(this.ropehead, entity.x-entity.width/2, entity.y-entity.height/2);
+
+        this.context.save()
+        this.context.translate(entity.owner.x, entity.owner.y - 28 + 28*(-1 * Math.cos(entity.angle) + 1));
+        this.context.rotate(entity.angle);
+        this.context.drawImage(this.ropebody, 0,0);
+        this.context.restore();
         
+
+
+        this.context.drawImage(this.ropehead, entity.x-entity.width/2, entity.y-entity.height/2);//ropehead
       }
     })
+
   }
 
   pushEntity (e: Entity)

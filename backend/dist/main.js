@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
-const message_type_1 = require("./enum/message-type");
-const messages_1 = require("./messages");
+const message_type_1 = require("shared/enum/message-type");
+const messages_1 = require("shared/messages");
 const wss = new ws_1.WebSocketServer({
     port: 8080,
     perMessageDeflate: {
@@ -56,7 +56,6 @@ wss.on('connection', (ws) => {
                 let player = message.player;
                 player.id = id;
                 entityList[id] = player;
-                console.log(entityList);
                 broadcast((id) => {
                     return JSON.stringify(new messages_1.EntityListUpdateMessage({
                         entities: Object.values(entityList).filter(entity => {

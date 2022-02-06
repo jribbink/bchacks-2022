@@ -21,7 +21,7 @@ export class Cowboy extends Entity {
         this.rope.state = RopeState.EXTENDING;
     }
 
-    update(game: Game) {
+    update(game: Game, delta: number) {
         let pos : number[] = this.position;
         let h : number[] = game.hole.position;
         if(Math.sqrt(Math.pow(pos[0]-h[0],2) + Math.pow(pos[1]-h[1], 2)) < game.hole.r){

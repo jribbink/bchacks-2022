@@ -1,7 +1,7 @@
 import { WebSocketServer, WebSocket } from "ws";
-import { Player } from './models/player'
-import { MessageType } from './enum/message-type'
-import { EntityListUpdateMessage } from './messages'
+import { Player } from 'shared/models'
+import { MessageType } from 'shared/enum/message-type'
+import { EntityListUpdateMessage } from 'shared/messages'
 
 const wss = new WebSocketServer({
     port: 8080,
@@ -61,7 +61,7 @@ wss.on('connection', (ws) => {
                 let player = message.player;
                 player.id = id;
                 entityList[id] = player;
-                
+
                 broadcast((id: string) => {
                     return JSON.stringify(new EntityListUpdateMessage({
                         entities: Object.values(entityList).filter(entity => {

@@ -3,6 +3,8 @@ import { Game } from "../game";
 export abstract class Entity {
     public x : number;
     public y : number;
+    width: number;
+    height: number;
 
     constructor(x: number, y: number) {
         this.x = x;
