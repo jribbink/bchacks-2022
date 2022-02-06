@@ -32,7 +32,7 @@ export class Cowboy extends Entity {
 
     update(game: Game, delta: number) {
         if(this.status=='fallen'){
-            console.log(this.status+" " +this.deathCount)
+            
             if(this.deathCount>=100){
                 
                 this.status ='dead'

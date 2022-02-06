@@ -1,6 +1,7 @@
 import { Entity } from "./entity";
 import { Cowboy } from "./cowboy";
 import { Game } from "../game";
+import { Images } from "../util/images";
 
 export enum RopeState {
     RETRACTING = -1.5,
@@ -69,7 +70,7 @@ export class Rope extends Entity {
         }
         if(!this.grabbed){
             g.entityList.every(entity => {
-                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbedLeft" && entity.status != "grabbedRightss" && entity.status != "fallen"&& entity.status != "dead"){
+                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbedLeft" && entity.status != "grabbedRight" && entity.status != "fallen"&& entity.status != "dead"){
                     if(this.x > entity.x-entity.width/2  && this.x<entity.x+entity.width/2 
                         && this.y>entity.y -entity.height/2 && this.y <entity.y+entity.height/2){
                         this.x=entity.x;
@@ -130,12 +131,23 @@ export class Rope extends Entity {
     }
 
     render(game: Game) {
-        game.context.beginPath();
-        game.context.arc(
-            this.x, 
-            this.y, 
-            90, 0, 2 * Math.PI
-        );
-        game.context.stroke(); 
+        game.context.save()
+        
+        //let sprites = document.getElementById("ropeCycle").children;
+        //let sprite: HTMLImageElement = sprites[0] as HTMLImageElement
+        game.context.translate(this.owner.x + 28 * Math.sin(this.angle) * this.lassoDist/500, this.owner.y - 28 * Math.cos(this.angle) * this.lassoDist/500);
+        game.context.rotate(this.angle);
+        game.context.scale(this.lassoDist/410,.5);
+        
+        game.context.drawImage(Images.Instance.images["ropebody"], 0,0);
+        game.context.setTransform(1,0,0,1,0,0)
+        
+        game.context.restore();
+        //sprites.appendChild(sprite);
+        
+        if(!this.grabbed)
+        game.context.drawImage(Images.Instance.images["ropehead"], this.x - 42,this.y - 38)
+        // else no need to draw rope head -- grabbed entity is a cowboy with rope around him anyway
+
     }
 }

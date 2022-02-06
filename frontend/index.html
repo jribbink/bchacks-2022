@@ -10,8 +10,19 @@
         <img id="start_image" src="" />
         <div class="menu">
           <img class="title" id="title_image" src="" />
-          <button id="start-button">Enter Game</button>
+          <button class="button" id="start-button">Enter Game</button>
+          <div id="name-input">
+            <span>Please enter your name:</span>
+            <input id="name" type="text" size="15"></input>
+            <button>Let's go!</button>
+          </div>
           <span class="credits">Created by Jordan Colledge, Gabriel McLachlan, Jordan Ribbink</span>
+        </div>
+        <div class="dead-screen">
+          <div>
+            <img id="dead-image" src="" />
+            <button class="button" id="play-again">Play Again?</button>
+          </div>
         </div>
         <canvas id="canvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
       </div>
@@ -29,6 +40,7 @@
       /* The rule below is implemented in most browsers by now */
       user-select: none;
       margin:0;
+      background-color: #743631;
     }
 
     .wrapper {
@@ -38,6 +50,7 @@
       flex-direction: row;
       justify-content: center;
       align-items: center;
+      font-family: 'Courier New', monospace;
     }
 
     #canvas {
@@ -65,12 +78,11 @@
       flex-direction: column;
       align-items: center;
       padding: 25px;
-      font-family: 'Courier New', monospace;
     }
     .title {
       width: 100%;
     }
-    #start-button {
+    .button {
       cursor: pointer;
       margin-top: auto;
       margin-bottom: auto;
@@ -83,7 +95,7 @@
       transition: all 1.0s ease;
       -webkit-transition: all 1.0s ease;
     }
-    #start-button:hover {
+    .button:hover {
       box-shadow: 0 4px 8px 10px rgba(0, 0, 0, 0.5), 0 6px 20px 15px rgba(0, 0, 0, 0.5);
       background-color: rgba(255,255,255,1);
       opacity: 1;
@@ -100,6 +112,73 @@
       right: 0;
       bottom: 0;
       z-index: -1;
+    }
+    .dead-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: black;
+      z-index: 1000;
+      display:none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dead-screen div {
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dead-screen div img {
+      margin-bottom: 50px;
+    }
+
+    .dead-screen div button {
+      margin: 25px
+    }
+
+    #name-input {
+      display: none;
+      flex-direction: column;
+      background-color: rgba(255, 255, 255, 1);
+      border-radius: 15px;
+      padding: 25px;
+      font-size: 1.5em;
+      margin: auto;
+      border: 2px solid black;
+    }
+
+    #name-input span {
+      font-weight: 900;
+      color: black;
+      padding-bottom: 15px;
+      text-align: center;
+    }
+
+    #name-input input {
+      margin: auto;
+      font-size: 1.5em;
+      border-radius: 5px;
+    }
+
+    #name-input button {
+      font-size: 1.5em;
+      margin: auto;
+      margin-top: 25px;
+      padding: 10px;
+      border-radius: 10px;
+      transition: all 1.0s ease;
+      -webkit-transition: all 1.0s ease;
+      cursor: pointer;
+    }
+
+    #name-input button:hover {
+      background-color: darkgrey;
+      box-shadow: 0 4px 8px 5px rgba(0, 0, 0, 0.5), 0 6px 20px 5px rgba(0, 0, 0, 0.5);
+      background-color: rgba(255,255,255,1);
     }
   </style>
   <script>

@@ -34,7 +34,7 @@ export class LocalPlayer extends Player {
         if(!this.game.loaded) return;
         if(this.delay > 0) return;
         if(this.rope) return;
-        if(this.status == "grabbed"|| this.status == "fallen") return;
+        if(this.status == "grabbedLeft"|| this.status == "grabbedRight" || this.status == "fallen" || this.status == "dead") return;
         var rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
         const coords = [e.clientX - rect.left, e.clientY - rect.top]
         this.throwLasso(coords, this.game);
@@ -43,14 +43,14 @@ export class LocalPlayer extends Player {
 
     updatePosition (delta: number) {
         if(this.rope) return;
-        if(this.status == "grabbed" || this.status == "fallen") return;
+        if(this.status == "grabbedLeft"|| this.status == "grabbedRight" || this.status == "fallen" || this.status == "dead") return;
 
         
         let hitboxX = this.width/2; let hitboxY = this.height/2;
 
         for (let key in controls)
         {
-            if(Keyboard.Instance.isKeyDown(key))
+            if(this.status!="fallen"&&this.status!="dead"&&Keyboard.Instance.isKeyDown(key))
             {
                 controls[key](this, delta)
                 if(this.x<hitboxX)
@@ -71,6 +71,11 @@ export class LocalPlayer extends Player {
         if(this.delay > 0) {
             this.delay -= delta;
             if(this.delay < 0) this.delay = 0;
+        }
+
+        if(this.status == "dead") {
+            this.game.exitGameLoop = true
+            this.game.endScreen.render()
         }
     }
 

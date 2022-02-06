@@ -2,6 +2,7 @@ import { Entity, Cowboy, Rope, Hole, RopeState } from "./entities"
 import { LocalPlayer } from "./entities/localplayer";
 import { GameServer } from "./gameserver";
 import { StartScreen } from "./start-screen";
+import { EndScreen } from './end-screen'
 import { Images } from "./util/images";
 
 const rope = require("../assets/sprites/ropehead.png")
@@ -24,7 +25,10 @@ export class Game {
   public loaded = false
   public gameServer: GameServer;
 
-  private startScreen: StartScreen
+  public startScreen: StartScreen;
+  public endScreen: EndScreen;
+
+  public exitGameLoop = false;
 
   constructor() {
     // Start loading images
@@ -45,11 +49,11 @@ export class Game {
     this.walk3=Images.Instance.images["cowboy_3"];
     this.walk4=Images.Instance.images["cowboy_4"];
 
-    this.entityList.push(new Cowboy(600,400))
     // Load websocket server
     this.gameServer = new GameServer(this)
 
     this.startScreen = new StartScreen(this)
+    this.endScreen = new EndScreen(this)
     this.waitUntilLoaded()
   }
 
@@ -81,7 +85,7 @@ export class Game {
     this.loaded = true
     this.update();
     this.render();
-    setTimeout(this.loop.bind(this), 0);
+    if(!this.exitGameLoop) setTimeout(this.loop.bind(this), 0);
   }
 
   update () {
@@ -105,9 +109,6 @@ export class Game {
 
     this.entityList.forEach(entity => {
       entity.render(this)
-      if(entity instanceof Hole){
-        this.context.drawImage(Images.Instance.images["hole"],entity.x-90,entity.y-90)
-      }
       if(entity instanceof Cowboy){
         if(entity.status=='dead'){}
         else{
@@ -149,26 +150,6 @@ export class Game {
         }
       }
         //sprites.appendChild(sprite);
-      }
-      if(entity instanceof Rope){
-
-        this.context.save()
-        
-        //let sprites = document.getElementById("ropeCycle").children;
-        //let sprite: HTMLImageElement = sprites[0] as HTMLImageElement
-        this.context.translate(entity.owner.x + 28 * Math.sin(entity.angle) * entity.lassoDist/500, entity.owner.y - 28 * Math.cos(entity.angle) * entity.lassoDist/500);
-        this.context.rotate(entity.angle);
-        this.context.scale(entity.lassoDist/410,.5);
-        
-        this.context.drawImage(Images.Instance.images["ropebody"], 0,0);
-          this.context.setTransform(1,0,0,1,0,0)
-        
-        this.context.restore();
-        //sprites.appendChild(sprite);
-        
-        if(!entity.grabbed)
-          this.context.drawImage(Images.Instance.images["ropehead"], entity.x - 42,entity.y - 38)
-        // else no need to draw rope head -- grabbed entity is a cowboy with rope around him anyway
       }
     })
 

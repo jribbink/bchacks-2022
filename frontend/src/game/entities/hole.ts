@@ -1,4 +1,5 @@
 import { Game } from "../game";
+import { Images } from "../util/images";
 import { Entity } from "./entity"
 
 export class Hole extends Entity {
@@ -20,6 +21,6 @@ export class Hole extends Entity {
     }
 
     render(game: Game) {
-        
+        game.context.drawImage(Images.Instance.images["hole"],this.x-90,this.y-90)
     }
 }

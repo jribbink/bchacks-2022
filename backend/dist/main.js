@@ -71,6 +71,7 @@ wss.on('connection', (ws) => {
                 break;
             case message_type_1.MessageType.ROPE_FIRE:
                 const ropeFireMessage = data;
+                console.log("rop");
                 broadcast(rawdata.toString(), id);
                 break;
         }
