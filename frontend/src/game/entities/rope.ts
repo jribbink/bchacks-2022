@@ -3,7 +3,8 @@ import { Cowboy } from "./cowboy";
 import { Game } from "../game";
 
 export enum RopeState {
-    RETRACTING = -1,
+    RETRACTING = -1.5,
+    PULLING = -1,
     STABLE = 0,
     EXTENDING = 1
 }
@@ -15,6 +16,7 @@ export class Rope extends Entity {
     state : RopeState;
     ropeSpeed : number;
     ropeMaxLen : number;
+    grabbed? : Cowboy;
 
     constructor(owner : Cowboy)
     {
@@ -43,13 +45,46 @@ export class Rope extends Entity {
         this.lassoDist = d;
     }
 
-    update(g: Game, delta: number)
-    {
-        if(this.lassoDist <= 0 && this.state == -1)
+    update(g: Game, delta: number){
+        let collidingWith: Entity;
+        if(!this.grabbed){
+            g.entityList.every(entity => {
+                if(entity instanceof Cowboy && entity !== this.owner && entity.status != "grabbed"){
+                    if(this.x > entity.x-entity.width/2  && this.x<entity.x+entity.width/2 
+                        && this.y>entity.y -entity.height/2 && this.y <entity.y+entity.height/2){
+                        collidingWith = entity;
+                        return false;
+                    } //hit detection ///cowboy x and y, y+- png yval, x+-png yva
+                }
+                return true;
+            })
+
+            if(!collidingWith && collidingWith instanceof Cowboy && collidingWith != this.owner)
+            {
+                collidingWith.status = "grabbed"
+                this.state = RopeState.PULLING;
+            }
+        }
+
+        if(this.lassoDist <= 0 && (this.state == RopeState.RETRACTING || this.state == RopeState.PULLING))
         {
-            this.state = 0;
+            this.state = RopeState.STABLE
             g.removeEntity(this)
             this.owner.rope = null
+            if(this.grabbed){
+            if(this.angle - Math.PI > Math.PI/2)
+                this.grabbed.status = "right"
+            else
+                this.grabbed.status = "left"
+        }
+            this.grabbed = null
+
+        }
+        else if(this.grabbed)
+        {
+            this.updatePosition(delta)
+            this.grabbed.x += this.ropeSpeed * delta * this.state * Math.cos(this.angle)
+            this.grabbed.y += this.ropeSpeed * delta * this.state * Math.sin(this.angle)
         }
         else
         {

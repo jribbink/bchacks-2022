@@ -1,4 +1,8 @@
 import { WebSocketServer } from "ws"
+import { MessageType } from "./enum/message-type";
+import { EntityListUpdateMessage, Message, PlayerUpdateMessage } from './messages'
+import { Player } from './models/player'
+import { IDSocket } from './models/id-socket'
 
 const wss = new WebSocketServer({
     port: 8080,
@@ -23,10 +27,48 @@ const wss = new WebSocketServer({
     }
 });
 
-wss.on('connection', (ws) => {
-    ws.on('message', (data) => {
+const entityList: {[id:string]:Player} = {}
+const clientList: {[id:string]:IDSocket} = {}
 
+function broadcast (message: (id: string) => string | any) {
+    if(message instanceof Function) {
+        for (let id in clientList) {
+            clientList[id].send(message(id))
+        }
+    } else {
+        for (let id in clientList) {
+            clientList[id].send(message)
+        }
+    }
+}
+
+wss.on('connection', (ws: IDSocket) => {
+    console.log(ws.id)
+    clientList[ws.id] = ws
+
+    ws.on('message', (data: Message) => {
+        switch (data.type) {
+            case MessageType.PLAYER_UPDATE:
+                const message = data as PlayerUpdateMessage
+                let player = message.player!!
+                player.id = ws.id
+
+                entityList[ws.id] = player
+
+                broadcast((id) => {
+                    ws.send(new EntityListUpdateMessage({
+                        entities: Object.values(entityList).filter(entity => {
+                            return entity.id != id
+                        })
+                    }))
+                })
+                break;
+        }
     })
 
-    ws.send("handshake")
+    ws.on('close', (code, reason) => {
+        delete clientList[ws.id]
+    })
+
+    ws.send(new EntityListUpdateMessage({entities: Object.values(entityList)}))
 })

@@ -7,7 +7,7 @@ export class Game {
   public context: CanvasRenderingContext2D;
 
   private localPlayer: LocalPlayer;
-  private entityList: Entity[];
+  entityList: Entity[];
   
   private img: HTMLImageElement;
   public hole: Hole;
@@ -26,12 +26,14 @@ export class Game {
     this.canvas.style.width = "800px";
     this.canvas.style.height = "600px";
     this.entityList = [];
-    this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90);
+    this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90)
+    this.entityList.push(this.hole);
+    this.localPlayer = new LocalPlayer(new Cowboy(200, 300), this);
+    this.entityList.push(this.localPlayer.cowboy);
 
-    this.entityList.push(new Cowboy());
-
-    this.localPlayer = new LocalPlayer(this.entityList[0] as Cowboy, this);
-
+    ///while, server has cowboys/players????
+    //this.entitylist.push(player.cowboy)
+    this.entityList.push(new Cowboy(600,400))
     console.log(this.canvas);
     console.log(this.context);
     
@@ -40,8 +42,8 @@ export class Game {
 
   calculateDelta (): number {
     const timeNow = window.performance.now()
-    const delta = timeNow - (this.lastFrame ?? timeNow);
-    this.lastFrame = timeNow;
+    const delta = timeNow - (this.lastFrame ?? timeNow)
+    this.lastFrame = timeNow
     return delta
   }
 
@@ -76,7 +78,7 @@ export class Game {
       this.context.beginPath();
       this.context.arc(entity.x, entity.y, 2, 0, 2 * Math.PI);
       this.context.stroke(); 
-     // this.context.drawImage(this.img, entity.x, entity.y);
+      this.context.drawImage(this.img, entity.x, entity.y);
     })
   }
 

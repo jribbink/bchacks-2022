@@ -13,6 +13,11 @@ export abstract class Entity {
         return [this.x,this.y]
     }
 
+    set position (position: number[]) {
+        this.x = position[0]
+        this.y = position[1]
+    } 
+
     abstract update (game: Game, delta: number): void
     abstract render (game: Game): void
 }
