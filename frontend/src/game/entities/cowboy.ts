@@ -4,6 +4,9 @@ import { Entity } from "./entity"
 import { Rope } from "./rope"
 import { Hole } from "./hole"
 
+const scream = require('../../assets/sound/scream.mp3')
+const wilhelm = new Audio(scream);
+
 export class Cowboy extends Entity {
     status: string;                        // directions, throw direction, grabbed
     rope? : Rope;
@@ -31,7 +34,11 @@ export class Cowboy extends Entity {
         let pos : number[] = this.position;
         let h : number[] = game.hole.position;
         if(Math.sqrt(Math.pow(pos[0]-h[0],2) + Math.pow(pos[1]-h[1], 2)) < game.hole.r){
+            if(this.status != "fallen")
+            {
                 this.status="fallen"
+                wilhelm.play();
+            }
         }
     }
 

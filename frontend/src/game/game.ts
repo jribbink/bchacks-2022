@@ -12,11 +12,14 @@ export class Game {
   public localPlayer: LocalPlayer;
   entityList: Entity[];
   
-  private img: HTMLImageElement;
-  private ropehead: HTMLImageElement;
-  private ropebody: HTMLImageElement;
-  public playerSprite: HTMLImageElement;
-  
+  //private img: HTMLImageElement;
+//  private ropehead: HTMLImageElement;
+//  private ropebody: HTMLImageElement;
+  //public playerSprite: HTMLImageElement[];
+  public walk1: HTMLImageElement;
+  public walk2: HTMLImageElement;
+  public walk3: HTMLImageElement;
+  public walk4: HTMLImageElement;
 
   public hole: Hole;
 
@@ -26,16 +29,13 @@ export class Game {
 
   constructor() {
     // Start loading images
-    const img = Images.Instance
+    Images.Instance
 
     // Load websocket server
     this.gameServer = new GameServer(this)
 
     this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!!;
-    this.img = document.getElementById("img") as HTMLImageElement;
-    this.ropehead = document.getElementById("ropehead") as HTMLImageElement;
-    this.ropebody = document.getElementById("ropebody") as HTMLImageElement;
 
     this.canvas.style.width = "800px";
     this.canvas.style.height = "600px";
@@ -45,6 +45,11 @@ export class Game {
     this.hole = new Hole(this.canvas.width/2, this.canvas.height/2, 90)
     this.entityList.push(this.hole);
     this.entityList.push(this.localPlayer);
+
+    this.walk1=Images.Instance.images["cowboy_1"];
+    this.walk2=Images.Instance.images["cowboy_2"];
+    this.walk3=Images.Instance.images["cowboy_3"];
+    this.walk4=Images.Instance.images["cowboy_4"];
 
     ///while, server has cowboys/players????
     //this.entitylist.push(player.cowboy)
@@ -93,9 +98,7 @@ export class Game {
 
           this.context.drawImage(Images.Instance.images["back"],0,0)
 
-      this.context.beginPath(); //draws the hole
-      this.context.arc(this.hole.x, this.hole.y, this.hole.r, 0, 2 * Math.PI);
-      this.context.stroke();
+    
 
 
     this.entityList.forEach(entity => {
@@ -104,6 +107,7 @@ export class Game {
         this.context.drawImage(Images.Instance.images["hole"],entity.x-90,entity.y-90)
       }
       if(entity instanceof Cowboy){
+        
         // this.context.drawImage(this.img, entity.x-entity.width/2, entity.y-entity.height/2);
         if(entity instanceof LocalPlayer){
           this.context.beginPath();
@@ -123,6 +127,8 @@ export class Game {
           }
           else
             this.context.drawImage(Images.Instance.images["cowboy_grabbed"],entity.x-entity.width/2,entity.y-entity.height/2);    //temp
+        }else if(entity.status == 'fallen'){
+
         }
         else if(entity.status == 'left') {
           this.context.translate(entity.x + entity.width, entity.y)

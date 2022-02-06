@@ -9,11 +9,14 @@ export enum RopeState {
     EXTENDING = 1
 }
 
+const whipcrack = require('../../assets/sound/whip.mp3')
+const crack = new Audio(whipcrack);
+
 export class Rope extends Entity {
     owner : Cowboy;                     // who's throwing it
     angle : number;
     lassoDist : number;
-    state : RopeState;
+    private _state : RopeState;
     ropeSpeed : number;
     ropeMaxLen : number;
     grabbed? : Cowboy;
@@ -34,6 +37,17 @@ export class Rope extends Entity {
 
         this.width=84
         this.height=76
+    }
+
+    set state(state:RopeState) {
+        if(state == RopeState.EXTENDING) {
+            crack.play();
+        }
+        this._state = state
+    }
+
+    get state() {
+        return this._state
     }
 
     updatePosition(delta: number)
