@@ -1,8 +1,8 @@
-class Keyboard
+export class Keyboard
 {
     private static _instance: Keyboard;
 
-    private keyMask = {}
+    private keyMask: {[key:string]: boolean} = {}
 
     private constructor()
     {

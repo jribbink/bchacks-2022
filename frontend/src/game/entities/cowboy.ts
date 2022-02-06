@@ -21,4 +21,8 @@ export class Cowboy extends Entity {
         this.rope.status = "thrown";
         this.status = "throwing";
     }
+
+    isCowboy(): boolean {
+        return true;
+    }
 }

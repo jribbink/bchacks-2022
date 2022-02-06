@@ -6,6 +6,10 @@ export class Entity {
         this.x = x;
         this.y = y;
     }
+
+    isCowboy() {
+        return false;
+    }
     
     get position () {
         return [this.x,this.y]
