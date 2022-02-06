@@ -1,6 +1,9 @@
 import { Entity, Cowboy, Rope, Hole, RopeState } from "./entities"
 import { LocalPlayer } from "./entities/localplayer";
 import { GameServer } from "./gameserver";
+import { Images } from "./util/images";
+
+const rope = require("../assets/sprites/ropehead.png")
 
 export class Game {
   public canvas: HTMLCanvasElement;
@@ -12,6 +15,7 @@ export class Game {
   private img: HTMLImageElement;
   private ropehead: HTMLImageElement;
   private ropebody: HTMLImageElement;
+  public playerSprite: HTMLImageElement;
   
 
   public hole: Hole;
@@ -21,6 +25,10 @@ export class Game {
   public gameServer: GameServer;
 
   constructor() {
+    // Start loading images
+    const img = Images.Instance
+
+    // Load websocket server
     this.gameServer = new GameServer(this)
 
     this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -43,8 +51,8 @@ export class Game {
     this.entityList.push(new Cowboy(600,400))
     console.log(this.canvas);
     console.log(this.context);
-    
-    this.loop();
+
+    this.waitUntilLoaded()
   }
 
   calculateDelta (): number {
@@ -52,6 +60,15 @@ export class Game {
     const delta = timeNow - (this.lastFrame ?? timeNow)
     this.lastFrame = timeNow
     return delta
+  }
+
+  waitUntilLoaded () {
+    if (!Images.Instance.loaded) {
+      console.log("loading")
+      setTimeout(this.waitUntilLoaded.bind(this), 0);
+    } else {
+      setTimeout(this.loop.bind(this), 0);
+    }
   }
 
   loop () {  
@@ -91,15 +108,15 @@ export class Game {
         this.context.arc(entity.x, entity.y, 48, 0, 2 * Math.PI * entity.delay / 420);
         this.context.stroke();
 
-        //sprites = document.getElementById("cowboyWalk") as HTMLImageElement
-        //sprite = sprites[0]
+        //let sprites = document.getElementById("cowboyWalk") as HTMLImageElement[]
+        //let sprite = sprites[0]
         //if(entity.state == 'left') {
-        //  context.translate(entity.x + entity.width, entity.y)
-        //  context.scale(-1,1)
-        //  context.drawImage(sprite,0,0)
-        //  context.setTransform(1,0,0,1,0,0)
+        //  this.context.translate(entity.x + entity.width, entity.y)
+        //  this.context.scale(-1,1)
+        //  this.context.drawImage(sprite,0,0)
+        //  this.context.setTransform(1,0,0,1,0,0)
         //} else {
-        //  context.drawImage(sprite,entity.x,entity.y);
+        //  this.context.drawImage(sprite,entity.x,entity.y);
         //}
         //sprites.appendChild(sprite);
       }
@@ -107,16 +124,21 @@ export class Game {
 
         this.context.save()
         
+        //let sprites = document.getElementById("ropeCycle").children;
+        //let sprite: HTMLImageElement = sprites[0] as HTMLImageElement
         this.context.translate(entity.owner.x + 28 * Math.sin(entity.angle) * entity.lassoDist/500, entity.owner.y - 28 * Math.cos(entity.angle) * entity.lassoDist/500);
         this.context.scale(entity.lassoDist/500,entity.lassoDist/500);
-       // this.context.translate(entity.owner.x, entity.owner.y - 28);
         this.context.rotate(entity.angle);
-        this.context.drawImage(this.ropebody, 0,0);
-        this.context.restore();
         
-
-
-        this.context.drawImage(this.ropehead, entity.x-entity.width/2, entity.y-entity.height/2);//ropehead
+        this.context.drawImage(Images.Instance.images["ropebody"], 0,0);
+          this.context.setTransform(1,0,0,1,0,0)
+        
+        this.context.restore();
+        //sprites.appendChild(sprite);
+        
+        if(!entity.grabbed)
+          this.context.drawImage(Images.Instance.images["ropehead"], 0,0)
+        // else no need to draw rope head -- grabbed entity is a cowboy with rope around him anyway
       }
     })
 
